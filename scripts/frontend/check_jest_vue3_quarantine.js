@@ -5,6 +5,7 @@ const { readFile, open, stat, mkdir } = require('node:fs/promises');
 const { join, relative, dirname } = require('node:path');
 const defaultChalk = require('chalk');
 const program = require('commander');
+const IS_EE = require('../../config/helpers/is_ee_env');
 const { getLocalQuarantinedFiles } = require('./jest_vue3_quarantine_utils');
 
 const ROOT = join(__dirname, '..', '..');
@@ -145,22 +146,36 @@ async function changedFiles() {
   return files.flat();
 }
 
-function intersection(a, b) {
+function filterSet(set, predicate) {
   const result = new Set();
 
-  for (const element of a) {
-    if (b.has(element)) result.add(element);
+  for (const element of set) {
+    if (predicate(element)) result.add(element);
   }
 
   return result;
+}
+
+function intersection(a, b) {
+  return filterSet(a, (element) => b.has(element));
 }
 
 async function getRemovedQuarantinedSpecs() {
   const removedQuarantinedSpecs = [];
 
   const filesToCheckIfTheyExist = IS_CI
-    ? // In CI, only check quarantined files the author has touched
-      intersection(filesThatChanged, quarantinedFiles)
+    ? // In CI, only check quarantined files the author has touched.
+      // If we're in a FOSS pipeline, ignore EE specs which do not exist.
+      filterSet(intersection(filesThatChanged, quarantinedFiles), (path) => {
+        if (IS_EE) return true;
+
+        if (path.startsWith('ee/')) {
+          console.warn(`Ignoring non-existent EE spec ${path} as we are in FOSS mode.`);
+          return false;
+        }
+
+        return true;
+      })
     : // Locally, check all quarantined files
       quarantinedFiles;
 
@@ -178,12 +193,14 @@ async function getRemovedQuarantinedSpecs() {
 
 function getTestArguments() {
   if (IS_CI) {
+    const nodeIndex = process.env.CI_NODE_INDEX ?? '1';
+    const nodeTotal = process.env.CI_NODE_TOTAL ?? '1';
+
     const ciArguments = (touchedFiles) => [
       '--findRelatedTests',
       ...touchedFiles,
       '--passWithNoTests',
-      // Explicitly have one shard, so that the `shard` method of the sequencer is called.
-      '--shard=1/1',
+      `--shard=${nodeIndex}/${nodeTotal}`,
       '--testSequencer',
       './scripts/frontend/check_jest_vue3_quarantine_sequencer.js',
     ];

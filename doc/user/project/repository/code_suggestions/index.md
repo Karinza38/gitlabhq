@@ -10,7 +10,7 @@ description: "Code Suggestions helps you write code in GitLab more efficiently b
 DETAILS:
 **Tier:** Premium with GitLab Duo Pro, Ultimate with GitLab Duo Pro or Enterprise - [Start a trial](https://about.gitlab.com/solutions/gitlab-duo-pro/sales/?type=free-trial)
 **Offering:** GitLab.com, Self-managed, GitLab Dedicated
-**LLMs:** For code completion, Vertex AI Codey [`code-gecko`](https://console.cloud.google.com/vertex-ai/publishers/google/model-garden/code-gecko). For code generation, Anthropic [Claude 3.5 Sonnet](https://console.cloud.google.com/vertex-ai/publishers/anthropic/model-garden/claude-3-5-sonnet).
+**LLMs:** For code completion, Fireworks AI-hosted [`Qwen2.5 7B`](https://fireworks.ai/models/fireworks/qwen2p5-coder-7b) and Vertex AI Codey [`code-gecko`](https://console.cloud.google.com/vertex-ai/publishers/google/model-garden/code-gecko). For code generation, Anthropic [Claude 3.5 Sonnet](https://console.cloud.google.com/vertex-ai/publishers/anthropic/model-garden/claude-3-5-sonnet).
 
 > - [Introduced support for Google Vertex AI Codey APIs](https://gitlab.com/groups/gitlab-org/-/epics/10562) in GitLab 16.1.
 > - [Removed support for GitLab native model](https://gitlab.com/groups/gitlab-org/-/epics/10752) in GitLab 16.2.
@@ -18,6 +18,7 @@ DETAILS:
 > - [Generally available](https://gitlab.com/gitlab-org/gitlab/-/issues/435271) in GitLab 16.7.
 > - Subscription changed to require GitLab Duo Pro on February 15, 2024.
 > - Changed to require GitLab Duo add-on in GitLab 17.6 and later.
+> - [Introduced support for Fireworks AI-hosted Qwen2.5 code completion model](https://gitlab.com/groups/gitlab-org/-/epics/15850) in GitLab 17.6, with a flag named `fireworks_qwen_code_completion`.
 
 NOTE:
 GitLab Duo requires GitLab 17.2 and later for the best user experience and results. Earlier versions may continue to work, however the experience may be degraded. You should [upgrade to the latest version of GitLab](../../../../update/index.md#upgrade-gitlab) for the best experience.
@@ -122,7 +123,31 @@ To generate quality code, write clear, descriptive, specific tasks.
 
 For use cases and best practices, follow the [GitLab Duo examples documentation](../../../gitlab_duo_examples.md).
 
-## Open tabs as context
+## Advanced Context
+
+When using Code Suggestions, the Advanced Context feature searches in the background
+to find and include relevant context from across a user's repository.
+
+For more information, see the [Advanced Context Resolver project epic](https://gitlab.com/groups/gitlab-org/editor-extensions/-/epics/57).
+
+### Advanced Context supported languages
+
+The Advanced Context feature supports these languages:
+
+- Code completion: all configured languages.
+- Code generation:
+  - Go
+  - Java
+  - JavaScript
+  - Kotlin
+  - Python
+  - Ruby
+  - Rust
+  - TypeScript (`.ts` and `.tsx` files)
+  - Vue
+  - YAML
+
+### Open tabs as context
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/464767) in GitLab 17.1 [with a flag](../../../../administration/feature_flags.md) named `advanced_context_resolver`. Disabled by default.
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/462750) in GitLab 17.1 [with a flag](../../../../administration/feature_flags.md) named `code_suggestions_context`. Disabled by default.
@@ -140,7 +165,9 @@ To get more accurate and relevant results from Code Suggestions and code generat
 the contents of the files open in tabs in your IDE. Similar to prompt engineering, these files
 give GitLab Duo more information about the standards and practices in your code project.
 
-### Enable open tabs as context
+Open tabs as context is part of the Advanced Context feature.
+
+#### Enable open tabs as context
 
 By default, Code Suggestions uses the open files in your IDE for context when making suggestions.
 
@@ -177,7 +204,7 @@ To confirm that open tabs are used as context:
 
 ::EndTabs
 
-### Use open tabs as context
+#### Use open tabs as context
 
 Open the files you want to provide for context:
 
@@ -201,17 +228,7 @@ To learn about the code that builds the prompt, see these files:
   [`ai_gateway/code_suggestions/processing/completions.py`](https://gitlab.com/gitlab-org/modelops/applied-ml/code-suggestions/ai-assist/-/blob/fcb3f485a8f047a86a8166aad81f93b6d82106a7/ai_gateway/code_suggestions/processing/completions.py#L273)
   in the `modelops` repository.
 
-Provide feedback about this feature in
-[issue 258](https://gitlab.com/gitlab-org/editor-extensions/gitlab-lsp/-/issues/258).
-
-## Advanced Context supported languages
-
-The Advanced Context feature supports these languages:
-
-- Code completion: all configured languages.
-- Code generation: Go, Java, JavaScript, Kotlin, Python, Ruby, Rust, TypeScript (`.ts` and `.tsx` files), Vue, and YAML.
-
-## Inference window context
+### Inference window context
 
 > - [Generally available](https://gitlab.com/gitlab-org/gitlab/-/issues/435271) in GitLab 16.8.
 > - [Introduced](https://gitlab.com/gitlab-org/editor-extensions/gitlab-lsp/-/issues/206) open tabs context in GitLab 17.2 [with flags](../../../../administration/feature_flags.md) named `advanced_context_resolver` and `code_suggestions_context`. Disabled by default.
@@ -232,7 +249,9 @@ For more information on possible future context expansion to improve the quality
 Because of LLM limits and performance reasons, the content of the currently
 opened file is truncated:
 
-- For code completion: to 2048 tokens (roughly 8192 characters).
+- For code completion: 
+  - In GitLab 17.5 and earlier, to 2,048 tokens (roughly 8,192 characters).
+  - In GitLab 17.6 and later, to 32,000 tokens (roughly 128,000 characters).
 - For code generation: to 142,856 tokens (roughly 500,000 characters).
 
 Content above the cursor is prioritized over content below the cursor. The content

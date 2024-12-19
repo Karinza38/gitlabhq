@@ -44,6 +44,12 @@ module Gitlab
         project.project_setting.pages_unique_domain = generate_unique_domain(project)
       end
 
+      def update_default_domain_redirect(project, default_domain_redirect)
+        return unless enabled?
+
+        project.project_setting.pages_default_domain_redirect = default_domain_redirect.presence
+      end
+
       def multiple_versions_enabled_for?(project)
         return false if project.blank?
 
@@ -51,11 +57,12 @@ module Gitlab
           project.licensed_feature_available?(:pages_multiple_versions)
       end
 
-      private
-
       def generate_unique_domain(project)
         10.times do
           pages_unique_domain = Gitlab::Pages::RandomDomain.generate(project_path: project.path)
+
+          return false if pages_unique_domain.blank?
+
           return pages_unique_domain unless
             ProjectSetting.unique_domain_exists?(pages_unique_domain) ||
               Namespace.top_level.by_path(pages_unique_domain).present?

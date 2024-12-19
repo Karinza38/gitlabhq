@@ -633,8 +633,8 @@ RSpec.describe Ci::Runner, type: :model, factory_default: :keep, feature_categor
   end
 
   describe '.with_creator_id' do
-    let_it_be(:admin) { create(:admin, username: 'root') }
-    let_it_be(:user2) { create(:user, username: 'user2') }
+    let_it_be(:admin) { create(:admin) }
+    let_it_be(:user2) { create(:user) }
 
     let_it_be(:user_runner1) { create(:ci_runner, creator: user2) }
     let_it_be(:admin_runner1) { create(:ci_runner, creator: admin) }
@@ -1312,20 +1312,6 @@ RSpec.describe Ci::Runner, type: :model, factory_default: :keep, feature_categor
 
           expect(runner.tags).to be_empty
         end
-      end
-    end
-
-    context 'with write_to_ci_runner_taggings disabled' do
-      before do
-        stub_feature_flags(write_to_ci_runner_taggings: false)
-      end
-
-      it 'does not save tag_links' do
-        runner.save!
-
-        expect(runner.tags.count).to eq(1)
-        expect(runner.tags.first.name).to eq('tag')
-        expect(runner.tag_links).to be_empty
       end
     end
   end

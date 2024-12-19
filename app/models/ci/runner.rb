@@ -109,11 +109,8 @@ module Ci
     scope :stale, -> do
       stale_timestamp = stale_deadline
 
-      created_before_stale_deadline = arel_table[:created_at].lteq(stale_timestamp)
-      contacted_before_stale_deadline = arel_table[:contacted_at].lteq(stale_timestamp)
-      never_contacted = arel_table[:contacted_at].eq(nil)
-
-      where(created_before_stale_deadline).where(never_contacted.or(contacted_before_stale_deadline))
+      where(created_at: ..stale_timestamp)
+        .and(never_contacted.or(where(contacted_at: ..stale_timestamp)))
     end
     scope :ordered, -> { order(id: :desc) }
 
@@ -449,8 +446,6 @@ module Ci
     override :save_tags
     def save_tags
       super do |new_tags, old_tags|
-        next if ::Feature.disabled?(:write_to_ci_runner_taggings, owner)
-
         if old_tags.present?
           tag_links
             .where(tag_id: old_tags)
@@ -570,6 +565,10 @@ module Ci
     def ensure_manager(system_xid)
       # rubocop: disable Performance/ActiveRecordSubtransactionMethods -- This is used only in API endpoints outside of transactions
       RunnerManager.safe_find_or_create_by!(runner_id: id, system_xid: system_xid.to_s) do |m|
+        # Avoid inserting partitioned runner managers that refer to a missing ci_runners partitioned record, since
+        # the backfill is not yet finalized.
+        ensure_partitioned_runner_record_exists
+
         m.runner_type = runner_type
         m.sharding_key_id = sharding_key_id
       end

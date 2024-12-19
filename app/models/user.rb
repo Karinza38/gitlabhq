@@ -183,6 +183,9 @@ class User < ApplicationRecord
   has_one :user_synced_attributes_metadata, autosave: true
   has_one :aws_role, class_name: 'Aws::Role'
 
+  # Ghost User Migration
+  has_one :ghost_user_migration, class_name: 'Users::GhostUserMigration'
+
   # Followers
   has_many :followed_users, foreign_key: :follower_id, class_name: 'Users::UserFollowUser'
   has_many :followees, -> { active }, through: :followed_users
@@ -362,13 +365,14 @@ class User < ApplicationRecord
   validates :hide_no_password, allow_nil: false, inclusion: { in: [true, false] }
   validates :notified_of_own_activity, allow_nil: false, inclusion: { in: [true, false] }
   validates :project_view, presence: true
+  validates :composite_identity_enforced, inclusion: { in: [false] }, unless: -> { service_account? }
 
   after_initialize :set_projects_limit
   # Ensures we get a user_detail on all new user records.
   # We are not able to fully guard against all possible places where User.new
   # is created, so we rely on the callback here at the model layer for our best
   # chance at ensuring the user_detail is created.
-  # However, we need to skip all non- new records as after_initialize is called on basic finders as well.
+  # However, we need to skip all non-new records as after_initialize is called on basic finders as well.
   after_initialize :build_default_user_detail, if: :new_record?
   before_validation :sanitize_attrs
   before_validation :ensure_namespace_correct
@@ -1109,10 +1113,8 @@ class User < ApplicationRecord
     # We can see one case of that in the Users::BuildService where it assigns user attributes that can
     # have delegated user_detail attributes added by classes that inherit this class and add
     # to the user attributes hash.
-    # Therefore we need to check for presence of an existing built user_detail here.
-    # TODO: Add lazy loading explicitly here when we remove the user_detail
-    # override in https://gitlab.com/gitlab-org/gitlab/-/issues/462919
-    user_detail
+    # Therefore, we need to check for presence of an existing built user_detail here.
+    user_detail || build_user_detail
   end
 
   def to_reference(_from = nil, target_container: nil, full: nil)
@@ -2383,11 +2385,6 @@ class User < ApplicationRecord
     super.presence || build_user_preference
   end
 
-  def user_detail
-    # TODO: remove override in https://gitlab.com/gitlab-org/gitlab/-/issues/462919
-    super.presence || build_user_detail
-  end
-
   def pending_todo_for(target)
     todos.find_by(target: target, state: :pending)
   end
@@ -2548,21 +2545,21 @@ class User < ApplicationRecord
     true
   end
 
-  # Deprecated method. We are currently transitioning to the use of composite_identity_enforced attribute
   def has_composite_identity?
-    false
-  end
+    # Since this is called in a number of places in both Sidekiq and Web,
+    # be extra paranoid that this column exists before reading it. This check
+    # can be removed in GitLab 17.8 or later.
+    return false unless has_attribute?(:composite_identity_enforced)
 
-  def composite_identity_enforced
-    false
-  end
-
-  def composite_identity_enforced=(value)
-    # no-op
+    composite_identity_enforced
   end
 
   def uploads_sharding_key
     {}
+  end
+
+  def add_admin_note(new_note)
+    self.note = "#{new_note}\n#{self.note}"
   end
 
   protected

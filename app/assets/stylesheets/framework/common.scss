@@ -176,7 +176,7 @@ table {
 .loading {
   margin: 20px auto;
   height: 40px;
-  color: $gray-700;
+  @apply gl-text-subtle;
   font-size: 32px;
   text-align: center;
 }
@@ -250,7 +250,7 @@ li.note {
 
 .gitlab-promo {
   a {
-    color: $gray-300;
+    @apply gl-text-disabled;
     margin-right: 30px;
   }
 }
@@ -462,4 +462,8 @@ copy-code {
   &:focus-within {
     opacity: 1;
   }
+}
+
+.markdown-code-block insert-code-snippet {
+  display: none;
 }

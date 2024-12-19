@@ -155,11 +155,7 @@ You can also remove (**{close}**) a merge request from the merge train details v
 > - Auto-merge for merge trains [introduced](https://gitlab.com/groups/gitlab-org/-/epics/10874) in GitLab 17.2 [with a flag](../../administration/feature_flags.md) named `merge_when_checks_pass_merge_train`. Disabled by default.
 > - Auto-merge for merge trains [enabled](https://gitlab.com/gitlab-org/gitlab/-/issues/470667) on GitLab.com in GitLab 17.2.
 > - Auto-merge for merge trains [enabled](https://gitlab.com/gitlab-org/gitlab/-/issues/470667) by default in GitLab 17.4.
-> - Auto-merge for merge trains [generally available](https://gitlab.com/gitlab-org/gitlab/-/issues/470667) in GitLab 17.7. Feature flag `merge_when_checks_pass_merge_train` removed.
-
-FLAG:
-The availability of this feature is controlled by a feature flag.
-For more information, see the history.
+> - Auto-merge for merge trains [generally available](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/174357) in GitLab 17.7. Feature flag `merge_when_checks_pass_merge_train` removed.
 
 Prerequisites:
 
@@ -197,7 +193,7 @@ To remove a merge request from a merge train:
 ## Skip the merge train and merge immediately
 
 If you have a high-priority merge request, like a critical patch that must
-be merged urgently, you can select **Merge Immediately**.
+be merged urgently, you can select **Merge immediately**.
 
 When you merge a merge request immediately:
 

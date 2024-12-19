@@ -187,7 +187,7 @@ DETAILS:
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/162826) in GitLab 17.4.
 
 You can configure your Pages deployments to be automatically deleted after
-a period of time has passed by specifying a duration at `pages.expire_in`:
+a period of time has passed by specifying a duration at [`pages.expire_in`](../../../ci/yaml/index.md#pagespagesexpire_in):
 
 ```yaml
 deploy-pages:
@@ -202,15 +202,16 @@ deploy-pages:
 ```
 
 By default, [parallel deployments](#parallel-deployments) expire
-automatically after 24 hours. To disable this behavior, set `pages.expire_in` to `never`.
+automatically after 24 hours.
+To disable this behavior, set `pages.expire_in` to `never`.
 
 Expired deployments are stopped by a cron job that runs every 10 minutes.
 Stopped deployments are subsequently deleted by another cron job that also
 runs every 10 minutes. To recover it, follow the steps described in
 [Recover a stopped deployment](#recover-a-stopped-deployment).
 
-A stopped or deleted deployment is no longer available on the web. Users will
-see a 404 Not found error page at its URL, until another deployment is created
+A stopped or deleted deployment is no longer available on the web.
+Users see a `404 Not found` error page at its URL, until another deployment is created
 with the same URL configuration.
 
 The previous YAML example uses [user-defined job names](#user-defined-job-names).
@@ -241,6 +242,7 @@ DETAILS:
 > - [Renamed](https://gitlab.com/gitlab-org/gitlab/-/issues/480195) from "multiple deployments" to "parallel deployments" in GitLab 17.4.
 > - [Enabled on GitLab.com, self-managed, and GitLab Dedicated](https://gitlab.com/gitlab-org/gitlab/-/issues/422145) in GitLab 17.4.
 > - [Changed](https://gitlab.com/gitlab-org/gitlab/-/issues/502219) to remove the project setting.
+> - [Changed](https://gitlab.com/gitlab-org/gitlab/-/issues/507423) to allow periods in `path_prefix` in GitLab 17.8.
 
 FLAG:
 The availability of this feature is controlled by a feature flag.
@@ -257,8 +259,8 @@ The value of `pages.path_prefix` is:
 
 - Converted to lowercase.
 - Shortened to 63 bytes.
-- Any character except numbers (`0-9`) and letter (`a-z`) is replaced with a hyphen (`-`).
-- Leading and trailing hyphens (`-`) are removed.
+- Any character except numbers (`0-9`), letters (`a-z`) and periods (`.`) is replaced with a hyphen (`-`).
+- Leading and trailing hyphens (`-`) and period (`.`) are removed.
 
 ### Example configuration
 

@@ -17,9 +17,7 @@ The following GitLab features are deprecated and no longer recommended for use.
 For advanced searching and filtering of this deprecation information, try
 [a tool built by our Customer Success team](https://gitlab-com.gitlab.io/cs-tools/gitlab-cs-tools/what-is-new-since/?tab=deprecations).
 
-[REST API deprecations](https://docs.gitlab.com/ee/api/rest/deprecations.html)
-and [GraphQL deprecations](https://docs.gitlab.com/ee/api/graphql/removed_items.html)
-are documented separately.
+[REST API deprecations](https://docs.gitlab.com/ee/api/rest/deprecations.html) are documented separately.
 
 **{rss}** **To be notified of upcoming breaking changes**,
 add this URL to your RSS feed reader: `https://about.gitlab.com/breaking-changes.xml`
@@ -234,6 +232,32 @@ This is one small step towards moving away from CI/CD templates in preference of
 
 <div class="deprecation breaking-change" data-milestone="18.0">
 
+### Amazon S3 Signature Version 2
+
+<div class="deprecation-notes">
+
+- Announced in GitLab <span class="milestone">17.8</span>
+- Removal in GitLab <span class="milestone">18.0</span> ([breaking change](https://docs.gitlab.com/ee/update/terminology.html#breaking-change))
+- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/container-registry/-/issues/1449).
+
+</div>
+
+Using Signature Version 2 to authenticate requests to Amazon S3 buckets in the container registry is deprecated.
+
+To ensure continued compatibility and security, migrate to Signature Version 4. This change requires updating your S3 bucket configuration settings and ensuring that your GitLab container registry settings are compatible with Signature Version 4.
+
+To migrate:
+
+1. Check your S3 storage backend configuration in the GitLab container registry settings.
+1. Remove the `v4auth: false` option if it's set.
+1. Verify your existing credentials work with v4 authentication.
+
+If you encounter any issues after making these changes, try regenerating your AWS credentials.
+
+</div>
+
+<div class="deprecation breaking-change" data-milestone="18.0">
+
 ### Behavior change for Upcoming and Started milestone filters
 
 <div class="deprecation-notes">
@@ -365,6 +389,7 @@ compliance pipelines in GitLab 17.3 and will remove the feature in GitLab 18.0.
 Customers should migrate from compliance pipelines to the new
 [pipeline execution policy type](https://docs.gitlab.com/ee/user/application_security/policies/pipeline_execution_policies.html)
 as soon as possible.
+For details, see the [migration guide](https://docs.gitlab.com/ee/user/group/compliance_pipelines.html#pipeline-execution-policies-migration) and [blog post](https://about.gitlab.com/blog/2024/10/01/why-gitlab-is-deprecating-compliance-pipelines-in-favor-of-security-policies/).
 
 </div>
 
@@ -1197,6 +1222,54 @@ Toggling notes confidentiality with REST and GraphQL APIs is being deprecated. U
 
 <div class="deprecation breaking-change" data-milestone="18.0">
 
+### Updated tooling to release CI/CD components to the Catalog
+
+<div class="deprecation-notes">
+
+- Announced in GitLab <span class="milestone">17.7</span>
+- Removal in GitLab <span class="milestone">18.0</span> ([breaking change](https://docs.gitlab.com/ee/update/terminology.html#breaking-change))
+- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/groups/gitlab-org/-/epics/12788).
+
+</div>
+
+Starting in GitLab 18.0, the internal process that releases CI/CD components to the Catalog will be changed.
+If you use the [recommended CI/CD component release process](https://docs.gitlab.com/ee/ci/components/#publish-a-new-release), which makes use of the `release` keyword and the `registry.gitlab.com/gitlab-org/release-cli:latest` container image, you do not need to make any changes.
+The `latest` version of this container image (`v0.20.0`) contains [GLab](https://gitlab.com/gitlab-org/cli/) `v1.50.0`, which will be used for all releases to the CI/CD Catalog in GitLab 18.0 and later.
+In other cases:
+
+- If you need to pin the container image to a specific version, use `v0.20.0` or later (`registry.gitlab.com/gitlab-org/release-cli:v0.20.0`),
+  to ensure GLab is available for the release process.
+- If you've manually installed the Release CLI tool on your runners, you must install GLab `v1.50.0` or later on those runners.
+
+</div>
+
+<div class="deprecation breaking-change" data-milestone="18.0">
+
+### Workspaces `editor` GraphQL field is deprecated
+
+<div class="deprecation-notes">
+
+- Announced in GitLab <span class="milestone">17.8</span>
+- Removal in GitLab <span class="milestone">18.0</span> ([breaking change](https://docs.gitlab.com/ee/update/terminology.html#breaking-change))
+- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab/-/issues/508155).
+
+</div>
+
+The `editor` field is not used internally. It will be deprecated in the following GraphQL elements:
+
+- `Workspace` type.
+- Input to `workspaceCreate` mutation.
+
+To prepare for this change:
+
+- Review and update your GraphQL queries that interact with the `Workspace` type.
+- Remove any references to the `editor` field.
+- Adjust your application logic accordingly.
+
+</div>
+
+<div class="deprecation breaking-change" data-milestone="18.0">
+
 ### ZenTao integration
 
 <div class="deprecation-notes">
@@ -1514,7 +1587,7 @@ another RHEL-compatible operating system.
 
 </div>
 
-Long term support (LTS) for [OpenSSL version 1.1.1 ended in September 2023](https://endoflife.date/openssl). Therefore, OpenSSL 3 will be the default in GitLab 17.7.
+Long term support (LTS) for [OpenSSL version 1.1.1 ended in September 2023](https://endoflife.date/openssl). Therefore, OpenSSL 3 will be the default in GitLab 17.7. GitLab bundles OpenSSL 3, so you are not required to make any changes to your operating system.
 
 With the upgrade to OpenSSL 3:
 

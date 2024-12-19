@@ -1274,6 +1274,7 @@ four standard [pagination arguments](#pagination-arguments):
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="querytopicsorganizationid"></a>`organizationId` **{warning-solid}** | [`OrganizationsOrganizationID`](#organizationsorganizationid) | **Introduced** in GitLab 17.7. **Status**: Experiment. Global ID of the organization. |
 | <a id="querytopicssearch"></a>`search` | [`String`](#string) | Search query for topic name. |
 
 ### `Query.usageTrendsMeasurements`
@@ -1692,6 +1693,8 @@ Input type: `AdminSidekiqQueuesDeleteJobsInput`
 | <a id="mutationadminsidekiqqueuesdeletejobsremoteip"></a>`remoteIp` | [`String`](#string) | Delete jobs matching remote_ip in the context metadata. |
 | <a id="mutationadminsidekiqqueuesdeletejobsrootcallerid"></a>`rootCallerId` | [`String`](#string) | Delete jobs matching root_caller_id in the context metadata. |
 | <a id="mutationadminsidekiqqueuesdeletejobsrootnamespace"></a>`rootNamespace` | [`String`](#string) | Delete jobs matching root_namespace in the context metadata. |
+| <a id="mutationadminsidekiqqueuesdeletejobsscopeduser"></a>`scopedUser` | [`String`](#string) | Delete jobs matching scoped_user in the context metadata. |
+| <a id="mutationadminsidekiqqueuesdeletejobsscopeduserid"></a>`scopedUserId` | [`String`](#string) | Delete jobs matching scoped_user_id in the context metadata. |
 | <a id="mutationadminsidekiqqueuesdeletejobssidekiqdestinationshardredis"></a>`sidekiqDestinationShardRedis` | [`String`](#string) | Delete jobs matching sidekiq_destination_shard_redis in the context metadata. |
 | <a id="mutationadminsidekiqqueuesdeletejobssubscriptionplan"></a>`subscriptionPlan` | [`String`](#string) | Delete jobs matching subscription_plan in the context metadata. |
 | <a id="mutationadminsidekiqqueuesdeletejobsuser"></a>`user` | [`String`](#string) | Delete jobs matching user in the context metadata. |
@@ -1725,6 +1728,7 @@ Input type: `AiActionInput`
 | <a id="mutationaiactiongeneratecommitmessage"></a>`generateCommitMessage` | [`AiGenerateCommitMessageInput`](#aigeneratecommitmessageinput) | Input for generate_commit_message AI action. |
 | <a id="mutationaiactiongeneratecubequery"></a>`generateCubeQuery` | [`AiGenerateCubeQueryInput`](#aigeneratecubequeryinput) | Input for generate_cube_query AI action. |
 | <a id="mutationaiactiongeneratedescription"></a>`generateDescription` | [`AiGenerateDescriptionInput`](#aigeneratedescriptioninput) | Input for generate_description AI action. |
+| <a id="mutationaiactionmeasurecommenttemperature"></a>`measureCommentTemperature` | [`AiMeasureCommentTemperatureInput`](#aimeasurecommenttemperatureinput) | Input for measure_comment_temperature AI action. |
 | <a id="mutationaiactionplatformorigin"></a>`platformOrigin` | [`String`](#string) | Specifies the origin platform of the request. |
 | <a id="mutationaiactionprojectid"></a>`projectId` | [`ProjectID`](#projectid) | Global ID of the project the user is acting on. |
 | <a id="mutationaiactionresolvevulnerability"></a>`resolveVulnerability` | [`AiResolveVulnerabilityInput`](#airesolvevulnerabilityinput) | Input for resolve_vulnerability AI action. |
@@ -1843,6 +1847,35 @@ Input type: `AiFeatureSettingUpdateInput`
 | <a id="mutationaifeaturesettingupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationaifeaturesettingupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
+### `Mutation.aiSelfHostedModelConnectionCheck`
+
+Checks if the AI Gateway can establish a connection with the given model configuration.
+
+DETAILS:
+**Introduced** in GitLab 17.7.
+**Status**: Experiment.
+
+Input type: `AiSelfHostedModelConnectionCheckInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationaiselfhostedmodelconnectioncheckapitoken"></a>`apiToken` | [`String`](#string) | API token to access the self-hosted model, if any. |
+| <a id="mutationaiselfhostedmodelconnectioncheckclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationaiselfhostedmodelconnectioncheckendpoint"></a>`endpoint` | [`String!`](#string) | Endpoint of the self-hosted model. |
+| <a id="mutationaiselfhostedmodelconnectioncheckidentifier"></a>`identifier` | [`String`](#string) | Identifier for 3rd party model provider. |
+| <a id="mutationaiselfhostedmodelconnectioncheckmodel"></a>`model` | [`AiAcceptedSelfHostedModels!`](#aiacceptedselfhostedmodels) | AI model deployed. |
+| <a id="mutationaiselfhostedmodelconnectioncheckname"></a>`name` | [`String!`](#string) | Deployment name of the self-hosted model. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationaiselfhostedmodelconnectioncheckclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationaiselfhostedmodelconnectioncheckerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationaiselfhostedmodelconnectioncheckresult"></a>`result` | [`CloudConnectorProbeResult`](#cloudconnectorproberesult) | Self-hosted hosted connection check result. |
+
 ### `Mutation.aiSelfHostedModelCreate`
 
 DETAILS:
@@ -1893,7 +1926,6 @@ Input type: `AiSelfHostedModelDeleteInput`
 | ---- | ---- | ----------- |
 | <a id="mutationaiselfhostedmodeldeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationaiselfhostedmodeldeleteerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationaiselfhostedmodeldeleteselfhostedmodel"></a>`selfHostedModel` | [`AiSelfHostedModel`](#aiselfhostedmodel) | Self-hosted model after mutation. |
 
 ### `Mutation.aiSelfHostedModelUpdate`
 
@@ -2754,6 +2786,26 @@ Input type: `BoardListUpdateLimitMetricsInput`
 | <a id="mutationboardlistupdatelimitmetricserrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationboardlistupdatelimitmetricslist"></a>`list` | [`BoardList`](#boardlist) | Updated list. |
 
+### `Mutation.branchDelete`
+
+Input type: `BranchDeleteInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationbranchdeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationbranchdeletename"></a>`name` | [`String!`](#string) | Name of the branch. |
+| <a id="mutationbranchdeleteprojectpath"></a>`projectPath` | [`ID!`](#id) | Project full path the branch is associated with. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationbranchdeletebranch"></a>`branch` | [`Branch`](#branch) | Branch after mutation. |
+| <a id="mutationbranchdeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationbranchdeleteerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+
 ### `Mutation.branchRuleApprovalProjectRuleCreate`
 
 DETAILS:
@@ -3082,6 +3134,7 @@ Input type: `CiJobTokenScopeAddGroupOrProjectInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationcijobtokenscopeaddgrouporprojectclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationcijobtokenscopeaddgrouporprojectdefaultpermissions"></a>`defaultPermissions` **{warning-solid}** | [`Boolean`](#boolean) | **Deprecated:** **Status**: Experiment. Introduced in GitLab 17.8. |
 | <a id="mutationcijobtokenscopeaddgrouporprojectjobtokenpolicies"></a>`jobTokenPolicies` **{warning-solid}** | [`[CiJobTokenScopePolicies!]`](#cijobtokenscopepolicies) | **Deprecated:** **Status**: Experiment. Introduced in GitLab 17.5. |
 | <a id="mutationcijobtokenscopeaddgrouporprojectprojectpath"></a>`projectPath` | [`ID!`](#id) | Project that the CI job token scope belongs to. |
 | <a id="mutationcijobtokenscopeaddgrouporprojecttargetpath"></a>`targetPath` | [`ID!`](#id) | Group or project to be added to the CI job token scope. |
@@ -3173,6 +3226,7 @@ Input type: `CiJobTokenScopeUpdatePoliciesInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationcijobtokenscopeupdatepoliciesclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationcijobtokenscopeupdatepoliciesdefaultpermissions"></a>`defaultPermissions` | [`Boolean!`](#boolean) | Indicates whether default permissions are enabled (true) or fine-grained permissions are enabled (false). |
 | <a id="mutationcijobtokenscopeupdatepoliciesjobtokenpolicies"></a>`jobTokenPolicies` | [`[CiJobTokenScopePolicies!]!`](#cijobtokenscopepolicies) | List of policies added to the CI job token scope. |
 | <a id="mutationcijobtokenscopeupdatepoliciesprojectpath"></a>`projectPath` | [`ID!`](#id) | Project that the CI job token scope belongs to. |
 | <a id="mutationcijobtokenscopeupdatepoliciestargetpath"></a>`targetPath` | [`ID!`](#id) | Group or project that the CI job token targets. |
@@ -7038,6 +7092,31 @@ Input type: `MarkAsSpamSnippetInput`
 | <a id="mutationmarkasspamsnippetclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationmarkasspamsnippeterrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationmarkasspamsnippetsnippet"></a>`snippet` | [`Snippet`](#snippet) | Snippet after mutation. |
+
+### `Mutation.memberRoleAdminCreate`
+
+DETAILS:
+**Introduced** in GitLab 17.7.
+**Status**: Experiment.
+
+Input type: `MemberRoleAdminCreateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationmemberroleadmincreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationmemberroleadmincreatedescription"></a>`description` | [`String`](#string) | Description of the member role. |
+| <a id="mutationmemberroleadmincreatename"></a>`name` | [`String`](#string) | Name of the member role. |
+| <a id="mutationmemberroleadmincreatepermissions"></a>`permissions` | [`[MemberRoleAdminPermission!]!`](#memberroleadminpermission) | List of all customizable admin permissions. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationmemberroleadmincreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationmemberroleadmincreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationmemberroleadmincreatememberrole"></a>`memberRole` | [`AdminMemberRole`](#adminmemberrole) | Created member role. |
 
 ### `Mutation.memberRoleCreate`
 
@@ -11253,7 +11332,6 @@ Input type: `WorkItemCreateInput`
 | <a id="mutationworkitemcreatemilestonewidget"></a>`milestoneWidget` | [`WorkItemWidgetMilestoneInput`](#workitemwidgetmilestoneinput) | Input for milestone widget. |
 | <a id="mutationworkitemcreatenamespacepath"></a>`namespacePath` | [`ID`](#id) | Full path of the namespace(project or group) the work item is created in. |
 | <a id="mutationworkitemcreateprojectpath"></a>`projectPath` **{warning-solid}** | [`ID`](#id) | **Deprecated:** Please use namespacePath instead. That will cover for both projects and groups. Deprecated in GitLab 15.10. |
-| <a id="mutationworkitemcreaterolledupdateswidget"></a>`rolledupDatesWidget` **{warning-solid}** | [`WorkItemWidgetRolledupDatesInput`](#workitemwidgetrolledupdatesinput) | **Deprecated:** **Status**: Experiment. Introduced in GitLab 16.9. |
 | <a id="mutationworkitemcreatestartandduedatewidget"></a>`startAndDueDateWidget` | [`WorkItemWidgetStartAndDueDateUpdateInput`](#workitemwidgetstartandduedateupdateinput) | Input for start and due date widget. |
 | <a id="mutationworkitemcreatetitle"></a>`title` | [`String!`](#string) | Title of the work item. |
 | <a id="mutationworkitemcreateweightwidget"></a>`weightWidget` | [`WorkItemWidgetWeightInput`](#workitemwidgetweightinput) | Input for weight widget. |
@@ -11442,7 +11520,6 @@ Input type: `WorkItemUpdateInput`
 | <a id="mutationworkitemupdatenoteswidget"></a>`notesWidget` | [`WorkItemWidgetNotesInput`](#workitemwidgetnotesinput) | Input for notes widget. |
 | <a id="mutationworkitemupdatenotificationswidget"></a>`notificationsWidget` | [`WorkItemWidgetNotificationsUpdateInput`](#workitemwidgetnotificationsupdateinput) | Input for notifications widget. |
 | <a id="mutationworkitemupdateprogresswidget"></a>`progressWidget` | [`WorkItemWidgetProgressInput`](#workitemwidgetprogressinput) | Input for progress widget. |
-| <a id="mutationworkitemupdaterolledupdateswidget"></a>`rolledupDatesWidget` **{warning-solid}** | [`WorkItemWidgetRolledupDatesInput`](#workitemwidgetrolledupdatesinput) | **Deprecated:** use StartAndDueDate instead. Deprecated in GitLab 17.5. |
 | <a id="mutationworkitemupdatestartandduedatewidget"></a>`startAndDueDateWidget` | [`WorkItemWidgetStartAndDueDateUpdateInput`](#workitemwidgetstartandduedateupdateinput) | Input for start and due date widget. |
 | <a id="mutationworkitemupdatestateevent"></a>`stateEvent` | [`WorkItemStateEvent`](#workitemstateevent) | Close or reopen a work item. |
 | <a id="mutationworkitemupdatestatuswidget"></a>`statusWidget` | [`StatusInput`](#statusinput) | Input for status widget. |
@@ -13195,6 +13272,29 @@ The edge type for [`ContainerProtectionRepositoryRule`](#containerprotectionrepo
 | <a id="containerprotectionrepositoryruleedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="containerprotectionrepositoryruleedgenode"></a>`node` | [`ContainerProtectionRepositoryRule`](#containerprotectionrepositoryrule) | The item at the end of the edge. |
 
+#### `ContainerProtectionTagRuleConnection`
+
+The connection type for [`ContainerProtectionTagRule`](#containerprotectiontagrule).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="containerprotectiontagruleconnectionedges"></a>`edges` | [`[ContainerProtectionTagRuleEdge]`](#containerprotectiontagruleedge) | A list of edges. |
+| <a id="containerprotectiontagruleconnectionnodes"></a>`nodes` | [`[ContainerProtectionTagRule]`](#containerprotectiontagrule) | A list of nodes. |
+| <a id="containerprotectiontagruleconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `ContainerProtectionTagRuleEdge`
+
+The edge type for [`ContainerProtectionTagRule`](#containerprotectiontagrule).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="containerprotectiontagruleedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="containerprotectiontagruleedgenode"></a>`node` | [`ContainerProtectionTagRule`](#containerprotectiontagrule) | The item at the end of the edge. |
+
 #### `ContainerRepositoryConnection`
 
 The connection type for [`ContainerRepository`](#containerrepository).
@@ -13404,6 +13504,29 @@ The edge type for [`CustomerRelationsOrganization`](#customerrelationsorganizati
 | <a id="customerrelationsorganizationedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="customerrelationsorganizationedgenode"></a>`node` | [`CustomerRelationsOrganization`](#customerrelationsorganization) | The item at the end of the edge. |
 
+#### `CustomizableAdminPermissionConnection`
+
+The connection type for [`CustomizableAdminPermission`](#customizableadminpermission).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="customizableadminpermissionconnectionedges"></a>`edges` | [`[CustomizableAdminPermissionEdge]`](#customizableadminpermissionedge) | A list of edges. |
+| <a id="customizableadminpermissionconnectionnodes"></a>`nodes` | [`[CustomizableAdminPermission]`](#customizableadminpermission) | A list of nodes. |
+| <a id="customizableadminpermissionconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `CustomizableAdminPermissionEdge`
+
+The edge type for [`CustomizableAdminPermission`](#customizableadminpermission).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="customizableadminpermissionedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="customizableadminpermissionedgenode"></a>`node` | [`CustomizableAdminPermission`](#customizableadminpermission) | The item at the end of the edge. |
+
 #### `CustomizableDashboardConnection`
 
 The connection type for [`CustomizableDashboard`](#customizabledashboard).
@@ -13495,6 +13618,29 @@ The edge type for [`CustomizablePermission`](#customizablepermission).
 | ---- | ---- | ----------- |
 | <a id="customizablepermissionedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="customizablepermissionedgenode"></a>`node` | [`CustomizablePermission`](#customizablepermission) | The item at the end of the edge. |
+
+#### `CustomizableStandardPermissionConnection`
+
+The connection type for [`CustomizableStandardPermission`](#customizablestandardpermission).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="customizablestandardpermissionconnectionedges"></a>`edges` | [`[CustomizableStandardPermissionEdge]`](#customizablestandardpermissionedge) | A list of edges. |
+| <a id="customizablestandardpermissionconnectionnodes"></a>`nodes` | [`[CustomizableStandardPermission]`](#customizablestandardpermission) | A list of nodes. |
+| <a id="customizablestandardpermissionconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `CustomizableStandardPermissionEdge`
+
+The edge type for [`CustomizableStandardPermission`](#customizablestandardpermission).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="customizablestandardpermissionedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="customizablestandardpermissionedgenode"></a>`node` | [`CustomizableStandardPermission`](#customizablestandardpermission) | The item at the end of the edge. |
 
 #### `DastProfileConnection`
 
@@ -18157,6 +18303,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="addonuserassignedmergerequestsapprovedby"></a>`approvedBy` | [`[String!]`](#string) | Usernames of the approvers. |
 | <a id="addonuserassignedmergerequestsapprover"></a>`approver` | [`[String!]`](#string) | Usernames of possible approvers. |
 | <a id="addonuserassignedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="addonuserassignedmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="addonuserassignedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="addonuserassignedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="addonuserassignedmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -18212,6 +18359,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="addonuserauthoredmergerequestsapprover"></a>`approver` | [`[String!]`](#string) | Usernames of possible approvers. |
 | <a id="addonuserauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="addonuserauthoredmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
+| <a id="addonuserauthoredmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="addonuserauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="addonuserauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="addonuserauthoredmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -18326,6 +18474,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="addonuserreviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="addonuserreviewrequestedmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="addonuserreviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="addonuserreviewrequestedmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="addonuserreviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="addonuserreviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="addonuserreviewrequestedmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -18449,6 +18598,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="addonusertodosaction"></a>`action` | [`[TodoActionEnum!]`](#todoactionenum) | Action to be filtered. |
 | <a id="addonusertodosauthorid"></a>`authorId` | [`[ID!]`](#id) | ID of an author. |
 | <a id="addonusertodosgroupid"></a>`groupId` | [`[ID!]`](#id) | ID of a group. |
+| <a id="addonusertodosissnoozed"></a>`isSnoozed` | [`Boolean`](#boolean) | Whether the to-do item is snoozed. |
 | <a id="addonusertodosprojectid"></a>`projectId` | [`[ID!]`](#id) | ID of a project. |
 | <a id="addonusertodossort"></a>`sort` | [`TodoSort`](#todosort) | Sort todos by given criteria. |
 | <a id="addonusertodosstate"></a>`state` | [`[TodoStateEnum!]`](#todostateenum) | State of the todo. |
@@ -18493,6 +18643,25 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="addonuserworkspacesids"></a>`ids` | [`[RemoteDevelopmentWorkspaceID!]`](#remotedevelopmentworkspaceid) | Filter workspaces by workspace GlobalIDs. For example, `["gid://gitlab/RemoteDevelopment::Workspace/1"]`. |
 | <a id="addonuserworkspacesincludeactualstates"></a>`includeActualStates` **{warning-solid}** | [`[String!]`](#string) | **Deprecated** in GitLab 16.7. Use actual_states instead. |
 | <a id="addonuserworkspacesprojectids"></a>`projectIds` | [`[ProjectID!]`](#projectid) | Filter workspaces by project GlobalIDs. |
+
+### `AdminMemberRole`
+
+Represents an admin member role.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="adminmemberrolebaseaccesslevel"></a>`baseAccessLevel` **{warning-solid}** | [`AccessLevel!`](#accesslevel) | **Introduced** in GitLab 16.5. **Status**: Experiment. Base access level for the custom role. |
+| <a id="adminmemberrolecreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp of when the member role was created. |
+| <a id="adminmemberroledescription"></a>`description` | [`String`](#string) | Role description. |
+| <a id="adminmemberroledetailspath"></a>`detailsPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.4. **Status**: Experiment. URL path to the role details webpage. |
+| <a id="adminmemberroleeditpath"></a>`editPath` **{warning-solid}** | [`String!`](#string) | **Introduced** in GitLab 16.11. **Status**: Experiment. Web UI path to edit the custom role. |
+| <a id="adminmemberroleenabledpermissions"></a>`enabledPermissions` **{warning-solid}** | [`CustomizableAdminPermissionConnection!`](#customizableadminpermissionconnection) | **Introduced** in GitLab 17.7. **Status**: Experiment. Array of all permissions enabled for the custom role. |
+| <a id="adminmemberroleid"></a>`id` | [`ID!`](#id) | Role ID. |
+| <a id="adminmemberrolememberscount"></a>`membersCount` **{warning-solid}** | [`Int`](#int) | **Introduced** in GitLab 17.3. **Status**: Experiment. Number of times the role has been directly assigned to a group or project member. |
+| <a id="adminmemberrolename"></a>`name` | [`String`](#string) | Role name. |
+| <a id="adminmemberroleuserscount"></a>`usersCount` **{warning-solid}** | [`Int`](#int) | **Introduced** in GitLab 17.5. **Status**: Experiment. Number of users who have been directly assigned the role in at least one group or project. |
 
 ### `AgentConfiguration`
 
@@ -18766,6 +18935,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="alertmanagementalerttodosaction"></a>`action` | [`[TodoActionEnum!]`](#todoactionenum) | Action to be filtered. |
 | <a id="alertmanagementalerttodosauthorid"></a>`authorId` | [`[ID!]`](#id) | ID of an author. |
 | <a id="alertmanagementalerttodosgroupid"></a>`groupId` | [`[ID!]`](#id) | ID of a group. |
+| <a id="alertmanagementalerttodosissnoozed"></a>`isSnoozed` | [`Boolean`](#boolean) | Whether the to-do item is snoozed. |
 | <a id="alertmanagementalerttodosprojectid"></a>`projectId` | [`[ID!]`](#id) | ID of a project. |
 | <a id="alertmanagementalerttodossort"></a>`sort` | [`TodoSort`](#todosort) | Sort todos by given criteria. |
 | <a id="alertmanagementalerttodosstate"></a>`state` | [`[TodoStateEnum!]`](#todostateenum) | State of the todo. |
@@ -19116,6 +19286,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="autocompleteduserassignedmergerequestsapprovedby"></a>`approvedBy` | [`[String!]`](#string) | Usernames of the approvers. |
 | <a id="autocompleteduserassignedmergerequestsapprover"></a>`approver` | [`[String!]`](#string) | Usernames of possible approvers. |
 | <a id="autocompleteduserassignedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="autocompleteduserassignedmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="autocompleteduserassignedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="autocompleteduserassignedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="autocompleteduserassignedmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -19171,6 +19342,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="autocompleteduserauthoredmergerequestsapprover"></a>`approver` | [`[String!]`](#string) | Usernames of possible approvers. |
 | <a id="autocompleteduserauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="autocompleteduserauthoredmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
+| <a id="autocompleteduserauthoredmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="autocompleteduserauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="autocompleteduserauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="autocompleteduserauthoredmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -19297,6 +19469,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="autocompleteduserreviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="autocompleteduserreviewrequestedmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="autocompleteduserreviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="autocompleteduserreviewrequestedmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="autocompleteduserreviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="autocompleteduserreviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="autocompleteduserreviewrequestedmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -19420,6 +19593,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="autocompletedusertodosaction"></a>`action` | [`[TodoActionEnum!]`](#todoactionenum) | Action to be filtered. |
 | <a id="autocompletedusertodosauthorid"></a>`authorId` | [`[ID!]`](#id) | ID of an author. |
 | <a id="autocompletedusertodosgroupid"></a>`groupId` | [`[ID!]`](#id) | ID of a group. |
+| <a id="autocompletedusertodosissnoozed"></a>`isSnoozed` | [`Boolean`](#boolean) | Whether the to-do item is snoozed. |
 | <a id="autocompletedusertodosprojectid"></a>`projectId` | [`[ID!]`](#id) | ID of a project. |
 | <a id="autocompletedusertodossort"></a>`sort` | [`TodoSort`](#todosort) | Sort todos by given criteria. |
 | <a id="autocompletedusertodosstate"></a>`state` | [`[TodoStateEnum!]`](#todostateenum) | State of the todo. |
@@ -19908,6 +20082,7 @@ Branch rules configured for a rule target.
 | <a id="branchruleisprotected"></a>`isProtected` | [`Boolean!`](#boolean) | Check if this branch rule protects access for the branch. |
 | <a id="branchrulematchingbranchescount"></a>`matchingBranchesCount` | [`Int!`](#int) | Number of existing branches that match this branch rule. |
 | <a id="branchrulename"></a>`name` | [`String!`](#string) | Name of the branch rule target. Includes wildcards. |
+| <a id="branchrulesquashoption"></a>`squashOption` **{warning-solid}** | [`SquashOption`](#squashoption) | **Introduced** in GitLab 17.7. **Status**: Experiment. The default behavior for squashing in merge requests. Returns null if `branch_rule_squash_settings` feature flag is disabled. |
 | <a id="branchruleupdatedat"></a>`updatedAt` | [`Time`](#time) | Timestamp of when the branch rule was last updated. |
 
 ### `BurnupChartDailyTotals`
@@ -20323,6 +20498,7 @@ Represents an allowlist entry for the CI_JOB_TOKEN.
 | ---- | ---- | ----------- |
 | <a id="cijobtokenscopeallowlistentryaddedby"></a>`addedBy` | [`UserCore`](#usercore) | User that added the entry. |
 | <a id="cijobtokenscopeallowlistentrycreatedat"></a>`createdAt` | [`Time!`](#time) | When the entry was created. |
+| <a id="cijobtokenscopeallowlistentrydefaultpermissions"></a>`defaultPermissions` | [`Boolean`](#boolean) | Indicates whether default permissions are enabled (true) or fine-grained permissions are enabled (false). |
 | <a id="cijobtokenscopeallowlistentrydirection"></a>`direction` | [`String`](#string) | Direction of access. Defaults to INBOUND. |
 | <a id="cijobtokenscopeallowlistentryjobtokenpolicies"></a>`jobTokenPolicies` **{warning-solid}** | [`[CiJobTokenScopePolicies!]`](#cijobtokenscopepolicies) | **Introduced** in GitLab 17.5. **Status**: Experiment. List of policies for the entry. |
 | <a id="cijobtokenscopeallowlistentrysourceproject"></a>`sourceProject` | [`Project!`](#project) | Project that owns the allowlist entry. |
@@ -21358,6 +21534,19 @@ A container repository protection rule designed to prevent users with a certain 
 | <a id="containerprotectionrepositoryruleminimumaccesslevelforpush"></a>`minimumAccessLevelForPush` **{warning-solid}** | [`ContainerProtectionRepositoryRuleAccessLevel`](#containerprotectionrepositoryruleaccesslevel) | **Introduced** in GitLab 16.6. **Status**: Experiment. Minimum GitLab access level required to push container images to the container repository. For example, `MAINTAINER`, `OWNER`, or `ADMIN`. If the value is `nil`, the minimum access level is ignored. Users with at least the Developer role can push container images. |
 | <a id="containerprotectionrepositoryrulerepositorypathpattern"></a>`repositoryPathPattern` **{warning-solid}** | [`String!`](#string) | **Introduced** in GitLab 16.6. **Status**: Experiment. Container repository path pattern protected by the protection rule. For example, `my-project/my-container-*`. Wildcard character `*` allowed. |
 
+### `ContainerProtectionTagRule`
+
+A container repository tag protection rule designed to prevent users with a certain access level or lower from altering the container registry.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="containerprotectiontagruleid"></a>`id` **{warning-solid}** | [`ContainerRegistryProtectionTagRuleID!`](#containerregistryprotectiontagruleid) | **Introduced** in GitLab 17.8. **Status**: Experiment. ID of the container repository tag protection rule. |
+| <a id="containerprotectiontagruleminimumaccesslevelfordelete"></a>`minimumAccessLevelForDelete` **{warning-solid}** | [`ContainerProtectionTagRuleAccessLevel`](#containerprotectiontagruleaccesslevel) | **Introduced** in GitLab 17.8. **Status**: Experiment. Minimum GitLab access level required to delete container image tags from the container repository. For example, `MAINTAINER`, `OWNER`, or `ADMIN`. If the value is `nil`, the minimum access level is ignored. Users with at least the Developer role can delete container image tags. |
+| <a id="containerprotectiontagruleminimumaccesslevelforpush"></a>`minimumAccessLevelForPush` **{warning-solid}** | [`ContainerProtectionTagRuleAccessLevel`](#containerprotectiontagruleaccesslevel) | **Introduced** in GitLab 17.8. **Status**: Experiment. Minimum GitLab access level required to push container image tags to the container repository. For example, `MAINTAINER`, `OWNER`, or `ADMIN`. If the value is `nil`, the minimum access level is ignored. Users with at least the Developer role can push container image tags. |
+| <a id="containerprotectiontagruletagnamepattern"></a>`tagNamePattern` **{warning-solid}** | [`String!`](#string) | **Introduced** in GitLab 17.8. **Status**: Experiment. Container repository tag name pattern protected by the protection rule. For example, `v1.*`. Wildcard character `*` allowed. |
+
 ### `ContainerRepository`
 
 A container repository.
@@ -21670,6 +21859,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="currentuserassignedmergerequestsapprovedby"></a>`approvedBy` | [`[String!]`](#string) | Usernames of the approvers. |
 | <a id="currentuserassignedmergerequestsapprover"></a>`approver` | [`[String!]`](#string) | Usernames of possible approvers. |
 | <a id="currentuserassignedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="currentuserassignedmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="currentuserassignedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="currentuserassignedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="currentuserassignedmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -21728,6 +21918,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="currentuserassigneeorreviewermergerequestsapprovedby"></a>`approvedBy` | [`[String!]`](#string) | Usernames of the approvers. |
 | <a id="currentuserassigneeorreviewermergerequestsapprover"></a>`approver` | [`[String!]`](#string) | Usernames of possible approvers. |
 | <a id="currentuserassigneeorreviewermergerequestsassignedreviewstates"></a>`assignedReviewStates` | [`[MergeRequestReviewState!]`](#mergerequestreviewstate) | Reviewer states for merge requests the current user is assigned to. |
+| <a id="currentuserassigneeorreviewermergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="currentuserassigneeorreviewermergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="currentuserassigneeorreviewermergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="currentuserassigneeorreviewermergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -21782,6 +21973,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="currentuserauthoredmergerequestsapprover"></a>`approver` | [`[String!]`](#string) | Usernames of possible approvers. |
 | <a id="currentuserauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="currentuserauthoredmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
+| <a id="currentuserauthoredmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="currentuserauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="currentuserauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="currentuserauthoredmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -21896,6 +22088,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="currentuserreviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="currentuserreviewrequestedmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="currentuserreviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="currentuserreviewrequestedmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="currentuserreviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="currentuserreviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="currentuserreviewrequestedmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -22019,6 +22212,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="currentusertodosaction"></a>`action` | [`[TodoActionEnum!]`](#todoactionenum) | Action to be filtered. |
 | <a id="currentusertodosauthorid"></a>`authorId` | [`[ID!]`](#id) | ID of an author. |
 | <a id="currentusertodosgroupid"></a>`groupId` | [`[ID!]`](#id) | ID of a group. |
+| <a id="currentusertodosissnoozed"></a>`isSnoozed` | [`Boolean`](#boolean) | Whether the to-do item is snoozed. |
 | <a id="currentusertodosprojectid"></a>`projectId` | [`[ID!]`](#id) | ID of a project. |
 | <a id="currentusertodossort"></a>`sort` | [`TodoSort`](#todosort) | Sort todos by given criteria. |
 | <a id="currentusertodosstate"></a>`state` | [`[TodoStateEnum!]`](#todostateenum) | State of the todo. |
@@ -22150,6 +22344,19 @@ Represents a custom field select option.
 | <a id="customerrelationsorganizationname"></a>`name` | [`String!`](#string) | Name of the organization. |
 | <a id="customerrelationsorganizationupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp the organization was last updated. |
 
+### `CustomizableAdminPermission`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="customizableadminpermissionavailablefor"></a>`availableFor` | [`[String!]!`](#string) | Objects the permission is available for. |
+| <a id="customizableadminpermissionavailablefromaccesslevel"></a>`availableFromAccessLevel` | [`AccessLevel`](#accesslevel) | Access level from which the permission is available. |
+| <a id="customizableadminpermissiondescription"></a>`description` | [`String`](#string) | Description of the permission. |
+| <a id="customizableadminpermissionname"></a>`name` | [`String!`](#string) | Localized name of the permission. |
+| <a id="customizableadminpermissionrequirements"></a>`requirements` | [`[MemberRoleAdminPermission!]`](#memberroleadminpermission) | Requirements of the permission. |
+| <a id="customizableadminpermissionvalue"></a>`value` | [`MemberRoleAdminPermission!`](#memberroleadminpermission) | Value of the permission. |
+
 ### `CustomizableDashboard`
 
 Represents a product analytics dashboard.
@@ -22207,6 +22414,19 @@ Represents a product analytics dashboard visualization.
 | <a id="customizablepermissionname"></a>`name` | [`String!`](#string) | Localized name of the permission. |
 | <a id="customizablepermissionrequirements"></a>`requirements` | [`[MemberRolePermission!]`](#memberrolepermission) | Requirements of the permission. |
 | <a id="customizablepermissionvalue"></a>`value` | [`MemberRolePermission!`](#memberrolepermission) | Value of the permission. |
+
+### `CustomizableStandardPermission`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="customizablestandardpermissionavailablefor"></a>`availableFor` | [`[String!]!`](#string) | Objects the permission is available for. |
+| <a id="customizablestandardpermissionavailablefromaccesslevel"></a>`availableFromAccessLevel` | [`AccessLevel`](#accesslevel) | Access level from which the permission is available. |
+| <a id="customizablestandardpermissiondescription"></a>`description` | [`String`](#string) | Description of the permission. |
+| <a id="customizablestandardpermissionname"></a>`name` | [`String!`](#string) | Localized name of the permission. |
+| <a id="customizablestandardpermissionrequirements"></a>`requirements` | [`[MemberRoleStandardPermission!]`](#memberrolestandardpermission) | Requirements of the permission. |
+| <a id="customizablestandardpermissionvalue"></a>`value` | [`MemberRoleStandardPermission!`](#memberrolestandardpermission) | Value of the permission. |
 
 ### `CveEnrichmentType`
 
@@ -25409,6 +25629,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="groupmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="groupmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="groupmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="groupmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="groupmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="groupmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="groupmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -25432,6 +25653,8 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="groupmergerequestsreleasetag"></a>`releaseTag` | [`String`](#string) | Filter by release tag. |
 | <a id="groupmergerequestsreviewstate"></a>`reviewState` **{warning-solid}** | [`MergeRequestReviewState`](#mergerequestreviewstate) | **Introduced** in GitLab 17.0. **Status**: Experiment. Reviewer state of the merge request. |
 | <a id="groupmergerequestsreviewstates"></a>`reviewStates` **{warning-solid}** | [`[MergeRequestReviewState!]`](#mergerequestreviewstate) | **Introduced** in GitLab 17.0. **Status**: Experiment. Reviewer states of the merge request. |
+| <a id="groupmergerequestsreviewerusername"></a>`reviewerUsername` | [`String`](#string) | Username of the reviewer. |
+| <a id="groupmergerequestsreviewerwildcardid"></a>`reviewerWildcardId` | [`ReviewerWildcardId`](#reviewerwildcardid) | Filter by reviewer presence. Incompatible with reviewerUsername. |
 | <a id="groupmergerequestssearch"></a>`search` | [`String`](#string) | Search query for title or description. |
 | <a id="groupmergerequestssort"></a>`sort` | [`MergeRequestSort`](#mergerequestsort) | Sort merge requests by the criteria. |
 | <a id="groupmergerequestssourcebranches"></a>`sourceBranches` | [`[String!]`](#string) | Array of source branch names. All resolved merge requests will have one of these branches as their source. |
@@ -25675,11 +25898,7 @@ four standard [pagination arguments](#pagination-arguments):
 
 ##### `Group.savedReplies`
 
-Saved replies available to the group. Available only when feature flag `group_saved_replies_flag` is enabled. This field can only be resolved for one group in any single request.
-
-DETAILS:
-**Introduced** in GitLab 16.10.
-**Status**: Experiment.
+Saved replies available to the group. This field can only be resolved for one group in any single request.
 
 Returns [`GroupSavedReplyConnection`](#groupsavedreplyconnection).
 
@@ -25695,11 +25914,7 @@ four standard [pagination arguments](#pagination-arguments):
 
 ##### `Group.savedReply`
 
-Saved reply in the group. Available only when feature flag `group_saved_replies_flag` is enabled. This field can only be resolved for one group in any single request.
-
-DETAILS:
-**Introduced** in GitLab 16.10.
-**Status**: Experiment.
+Saved reply in the group. This field can only be resolved for one group in any single request.
 
 Returns [`GroupSavedReply`](#groupsavedreply).
 
@@ -27317,7 +27532,7 @@ Represents a member role.
 | <a id="memberroledescription"></a>`description` | [`String`](#string) | Role description. |
 | <a id="memberroledetailspath"></a>`detailsPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.4. **Status**: Experiment. URL path to the role details webpage. |
 | <a id="memberroleeditpath"></a>`editPath` **{warning-solid}** | [`String!`](#string) | **Introduced** in GitLab 16.11. **Status**: Experiment. Web UI path to edit the custom role. |
-| <a id="memberroleenabledpermissions"></a>`enabledPermissions` **{warning-solid}** | [`CustomizablePermissionConnection!`](#customizablepermissionconnection) | **Introduced** in GitLab 16.5. **Status**: Experiment. Array of all permissions enabled for the custom role. |
+| <a id="memberroleenabledpermissions"></a>`enabledPermissions` **{warning-solid}** | [`CustomizableStandardPermissionConnection!`](#customizablestandardpermissionconnection) | **Introduced** in GitLab 16.5. **Status**: Experiment. Array of all permissions enabled for the custom role. |
 | <a id="memberroleid"></a>`id` | [`ID!`](#id) | Role ID. |
 | <a id="memberrolememberscount"></a>`membersCount` **{warning-solid}** | [`Int`](#int) | **Introduced** in GitLab 17.3. **Status**: Experiment. Number of times the role has been directly assigned to a group or project member. |
 | <a id="memberrolename"></a>`name` | [`String`](#string) | Role name. |
@@ -27409,6 +27624,7 @@ Defines which user roles, users, or groups can merge into a protected branch.
 | <a id="mergerequestmilestone"></a>`milestone` | [`Milestone`](#milestone) | Milestone of the merge request. |
 | <a id="mergerequestname"></a>`name` | [`String`](#string) | Name or title of this object. |
 | <a id="mergerequestparticipants"></a>`participants` | [`MergeRequestParticipantConnection`](#mergerequestparticipantconnection) | Participants in the merge request. This includes the author, assignees, reviewers, and users mentioned in notes. (see [Connections](#connections)) |
+| <a id="mergerequestpoliciesoverridingapprovalsettings"></a>`policiesOverridingApprovalSettings` | [`[PolicyApprovalSettingsOverride!]`](#policyapprovalsettingsoverride) | Approval settings that are overridden by the policies for the merge request. |
 | <a id="mergerequestpolicyviolations"></a>`policyViolations` | [`PolicyViolationDetails`](#policyviolationdetails) | Policy violations reported on the merge request. |
 | <a id="mergerequestpreparedat"></a>`preparedAt` | [`Time`](#time) | Timestamp of when the merge request was prepared. |
 | <a id="mergerequestproject"></a>`project` | [`Project!`](#project) | Alias for target_project. |
@@ -27632,6 +27848,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="mergerequestassigneeassignedmergerequestsapprovedby"></a>`approvedBy` | [`[String!]`](#string) | Usernames of the approvers. |
 | <a id="mergerequestassigneeassignedmergerequestsapprover"></a>`approver` | [`[String!]`](#string) | Usernames of possible approvers. |
 | <a id="mergerequestassigneeassignedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="mergerequestassigneeassignedmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="mergerequestassigneeassignedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="mergerequestassigneeassignedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="mergerequestassigneeassignedmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -27687,6 +27904,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="mergerequestassigneeauthoredmergerequestsapprover"></a>`approver` | [`[String!]`](#string) | Usernames of possible approvers. |
 | <a id="mergerequestassigneeauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="mergerequestassigneeauthoredmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
+| <a id="mergerequestassigneeauthoredmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="mergerequestassigneeauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="mergerequestassigneeauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="mergerequestassigneeauthoredmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -27801,6 +28019,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="mergerequestassigneereviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="mergerequestassigneereviewrequestedmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="mergerequestassigneereviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="mergerequestassigneereviewrequestedmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="mergerequestassigneereviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="mergerequestassigneereviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="mergerequestassigneereviewrequestedmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -27924,6 +28143,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="mergerequestassigneetodosaction"></a>`action` | [`[TodoActionEnum!]`](#todoactionenum) | Action to be filtered. |
 | <a id="mergerequestassigneetodosauthorid"></a>`authorId` | [`[ID!]`](#id) | ID of an author. |
 | <a id="mergerequestassigneetodosgroupid"></a>`groupId` | [`[ID!]`](#id) | ID of a group. |
+| <a id="mergerequestassigneetodosissnoozed"></a>`isSnoozed` | [`Boolean`](#boolean) | Whether the to-do item is snoozed. |
 | <a id="mergerequestassigneetodosprojectid"></a>`projectId` | [`[ID!]`](#id) | ID of a project. |
 | <a id="mergerequestassigneetodossort"></a>`sort` | [`TodoSort`](#todosort) | Sort todos by given criteria. |
 | <a id="mergerequestassigneetodosstate"></a>`state` | [`[TodoStateEnum!]`](#todostateenum) | State of the todo. |
@@ -28038,6 +28258,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="mergerequestauthorassignedmergerequestsapprovedby"></a>`approvedBy` | [`[String!]`](#string) | Usernames of the approvers. |
 | <a id="mergerequestauthorassignedmergerequestsapprover"></a>`approver` | [`[String!]`](#string) | Usernames of possible approvers. |
 | <a id="mergerequestauthorassignedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="mergerequestauthorassignedmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="mergerequestauthorassignedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="mergerequestauthorassignedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="mergerequestauthorassignedmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -28093,6 +28314,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="mergerequestauthorauthoredmergerequestsapprover"></a>`approver` | [`[String!]`](#string) | Usernames of possible approvers. |
 | <a id="mergerequestauthorauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="mergerequestauthorauthoredmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
+| <a id="mergerequestauthorauthoredmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="mergerequestauthorauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="mergerequestauthorauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="mergerequestauthorauthoredmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -28207,6 +28429,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="mergerequestauthorreviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="mergerequestauthorreviewrequestedmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="mergerequestauthorreviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="mergerequestauthorreviewrequestedmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="mergerequestauthorreviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="mergerequestauthorreviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="mergerequestauthorreviewrequestedmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -28330,6 +28553,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="mergerequestauthortodosaction"></a>`action` | [`[TodoActionEnum!]`](#todoactionenum) | Action to be filtered. |
 | <a id="mergerequestauthortodosauthorid"></a>`authorId` | [`[ID!]`](#id) | ID of an author. |
 | <a id="mergerequestauthortodosgroupid"></a>`groupId` | [`[ID!]`](#id) | ID of a group. |
+| <a id="mergerequestauthortodosissnoozed"></a>`isSnoozed` | [`Boolean`](#boolean) | Whether the to-do item is snoozed. |
 | <a id="mergerequestauthortodosprojectid"></a>`projectId` | [`[ID!]`](#id) | ID of a project. |
 | <a id="mergerequestauthortodossort"></a>`sort` | [`TodoSort`](#todosort) | Sort todos by given criteria. |
 | <a id="mergerequestauthortodosstate"></a>`state` | [`[TodoStateEnum!]`](#todostateenum) | State of the todo. |
@@ -28490,6 +28714,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="mergerequestparticipantassignedmergerequestsapprovedby"></a>`approvedBy` | [`[String!]`](#string) | Usernames of the approvers. |
 | <a id="mergerequestparticipantassignedmergerequestsapprover"></a>`approver` | [`[String!]`](#string) | Usernames of possible approvers. |
 | <a id="mergerequestparticipantassignedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="mergerequestparticipantassignedmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="mergerequestparticipantassignedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="mergerequestparticipantassignedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="mergerequestparticipantassignedmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -28545,6 +28770,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="mergerequestparticipantauthoredmergerequestsapprover"></a>`approver` | [`[String!]`](#string) | Usernames of possible approvers. |
 | <a id="mergerequestparticipantauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="mergerequestparticipantauthoredmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
+| <a id="mergerequestparticipantauthoredmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="mergerequestparticipantauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="mergerequestparticipantauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="mergerequestparticipantauthoredmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -28659,6 +28885,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="mergerequestparticipantreviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="mergerequestparticipantreviewrequestedmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="mergerequestparticipantreviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="mergerequestparticipantreviewrequestedmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="mergerequestparticipantreviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="mergerequestparticipantreviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="mergerequestparticipantreviewrequestedmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -28782,6 +29009,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="mergerequestparticipanttodosaction"></a>`action` | [`[TodoActionEnum!]`](#todoactionenum) | Action to be filtered. |
 | <a id="mergerequestparticipanttodosauthorid"></a>`authorId` | [`[ID!]`](#id) | ID of an author. |
 | <a id="mergerequestparticipanttodosgroupid"></a>`groupId` | [`[ID!]`](#id) | ID of a group. |
+| <a id="mergerequestparticipanttodosissnoozed"></a>`isSnoozed` | [`Boolean`](#boolean) | Whether the to-do item is snoozed. |
 | <a id="mergerequestparticipanttodosprojectid"></a>`projectId` | [`[ID!]`](#id) | ID of a project. |
 | <a id="mergerequestparticipanttodossort"></a>`sort` | [`TodoSort`](#todosort) | Sort todos by given criteria. |
 | <a id="mergerequestparticipanttodosstate"></a>`state` | [`[TodoStateEnum!]`](#todostateenum) | State of the todo. |
@@ -28915,6 +29143,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="mergerequestreviewerassignedmergerequestsapprovedby"></a>`approvedBy` | [`[String!]`](#string) | Usernames of the approvers. |
 | <a id="mergerequestreviewerassignedmergerequestsapprover"></a>`approver` | [`[String!]`](#string) | Usernames of possible approvers. |
 | <a id="mergerequestreviewerassignedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="mergerequestreviewerassignedmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="mergerequestreviewerassignedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="mergerequestreviewerassignedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="mergerequestreviewerassignedmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -28970,6 +29199,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="mergerequestreviewerauthoredmergerequestsapprover"></a>`approver` | [`[String!]`](#string) | Usernames of possible approvers. |
 | <a id="mergerequestreviewerauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="mergerequestreviewerauthoredmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
+| <a id="mergerequestreviewerauthoredmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="mergerequestreviewerauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="mergerequestreviewerauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="mergerequestreviewerauthoredmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -29084,6 +29314,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="mergerequestreviewerreviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="mergerequestreviewerreviewrequestedmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="mergerequestreviewerreviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="mergerequestreviewerreviewrequestedmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="mergerequestreviewerreviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="mergerequestreviewerreviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="mergerequestreviewerreviewrequestedmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -29207,6 +29438,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="mergerequestreviewertodosaction"></a>`action` | [`[TodoActionEnum!]`](#todoactionenum) | Action to be filtered. |
 | <a id="mergerequestreviewertodosauthorid"></a>`authorId` | [`[ID!]`](#id) | ID of an author. |
 | <a id="mergerequestreviewertodosgroupid"></a>`groupId` | [`[ID!]`](#id) | ID of a group. |
+| <a id="mergerequestreviewertodosissnoozed"></a>`isSnoozed` | [`Boolean`](#boolean) | Whether the to-do item is snoozed. |
 | <a id="mergerequestreviewertodosprojectid"></a>`projectId` | [`[ID!]`](#id) | ID of a project. |
 | <a id="mergerequestreviewertodossort"></a>`sort` | [`TodoSort`](#todosort) | Sort todos by given criteria. |
 | <a id="mergerequestreviewertodosstate"></a>`state` | [`[TodoStateEnum!]`](#todostateenum) | State of the todo. |
@@ -31099,6 +31331,18 @@ Represents policy violation for `any_merge_request` report_type.
 | <a id="policyapprovalgroupid"></a>`id` | [`ID!`](#id) | ID of the namespace. |
 | <a id="policyapprovalgroupweburl"></a>`webUrl` | [`String!`](#string) | Web URL of the group. |
 
+### `PolicyApprovalSettingsOverride`
+
+Represents the approval settings of merge request overridden by a policy.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="policyapprovalsettingsoverrideeditpath"></a>`editPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.8. **Status**: Experiment. Path to edit the policy. |
+| <a id="policyapprovalsettingsoverridename"></a>`name` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.8. **Status**: Experiment. Policy name. |
+| <a id="policyapprovalsettingsoverridesettings"></a>`settings` | [`JSON!`](#json) | Overridden project approval settings. |
+
 ### `PolicyApproversType`
 
 Multiple approvers action.
@@ -31271,6 +31515,7 @@ Project-level settings for product analytics provider.
 | <a id="projectcomponentusages"></a>`componentUsages` | [`CiCatalogResourceComponentUsageConnection`](#cicatalogresourcecomponentusageconnection) | Component(s) used by the project. (see [Connections](#connections)) |
 | <a id="projectcontainerexpirationpolicy"></a>`containerExpirationPolicy` **{warning-solid}** | [`ContainerExpirationPolicy`](#containerexpirationpolicy) | **Deprecated** in GitLab 17.5. Use `container_tags_expiration_policy`. |
 | <a id="projectcontainerprotectionrepositoryrules"></a>`containerProtectionRepositoryRules` **{warning-solid}** | [`ContainerProtectionRepositoryRuleConnection`](#containerprotectionrepositoryruleconnection) | **Introduced** in GitLab 16.10. **Status**: Experiment. Container protection rules for the project. |
+| <a id="projectcontainerprotectiontagrules"></a>`containerProtectionTagRules` **{warning-solid}** | [`ContainerProtectionTagRuleConnection`](#containerprotectiontagruleconnection) | **Introduced** in GitLab 17.8. **Status**: Experiment. Container repository tag protection rules for the project. Returns an empty array if the `container_registry_protected_tags` feature flag is disabled. |
 | <a id="projectcontainerregistryenabled"></a>`containerRegistryEnabled` | [`Boolean`](#boolean) | Indicates if Container Registry is enabled for the current user. |
 | <a id="projectcontainerrepositoriescount"></a>`containerRepositoriesCount` | [`Int!`](#int) | Number of container repositories in the project. |
 | <a id="projectcontainertagsexpirationpolicy"></a>`containerTagsExpirationPolicy` | [`ContainerTagsExpirationPolicy`](#containertagsexpirationpolicy) | Container tags expiration policy of the project. |
@@ -31349,7 +31594,7 @@ Project-level settings for product analytics provider.
 | <a id="projectrequestaccessenabled"></a>`requestAccessEnabled` | [`Boolean`](#boolean) | Indicates if users can request member access to the project. |
 | <a id="projectrequirementstatescount"></a>`requirementStatesCount` | [`RequirementStatesCount`](#requirementstatescount) | Number of requirements for the project by their state. |
 | <a id="projectsastciconfiguration"></a>`sastCiConfiguration` | [`SastCiConfiguration`](#sastciconfiguration) | SAST CI configuration for the project. |
-| <a id="projectsavedreplies"></a>`savedReplies` **{warning-solid}** | [`ProjectSavedReplyConnection`](#projectsavedreplyconnection) | **Introduced** in GitLab 16.11. **Status**: Experiment. Saved replies available to the project. Available only when feature flag `project_saved_replies_flag` is enabled. |
+| <a id="projectsavedreplies"></a>`savedReplies` | [`ProjectSavedReplyConnection`](#projectsavedreplyconnection) | Saved replies available to the project. (see [Connections](#connections)) |
 | <a id="projectsecuritydashboardpath"></a>`securityDashboardPath` | [`String`](#string) | Path to project's security dashboard. |
 | <a id="projectsecuritypolicyproject"></a>`securityPolicyProject` | [`Project`](#project) | Security policy project assigned to the project, absent if assigned to a parent group. |
 | <a id="projectsecuritypolicyprojectlinkedgroups"></a>`securityPolicyProjectLinkedGroups` | [`GroupConnection`](#groupconnection) | Groups linked to the project, when used as Security Policy Project. (see [Connections](#connections)) |
@@ -32415,6 +32660,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="projectmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="projectmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="projectmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="projectmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="projectmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="projectmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="projectmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -32888,11 +33134,7 @@ four standard [pagination arguments](#pagination-arguments):
 
 ##### `Project.savedReply`
 
-Saved reply in the project. Available only when feature flag `group_saved_replies_flag` is enabled.
-
-DETAILS:
-**Introduced** in GitLab 16.11.
-**Status**: Experiment.
+Saved reply in the project.
 
 Returns [`ProjectSavedReply`](#projectsavedreply).
 
@@ -34972,6 +35214,17 @@ Represents the Geo sync and verification state of a snippet repository.
 | <a id="snippetrepositoryregistryverificationstate"></a>`verificationState` | [`VerificationStateEnum`](#verificationstateenum) | Verification state of the SnippetRepositoryRegistry. |
 | <a id="snippetrepositoryregistryverifiedat"></a>`verifiedAt` | [`Time`](#time) | Timestamp of the most recent successful verification of the SnippetRepositoryRegistry. |
 
+### `SquashOption`
+
+Squash option overrides for a protected branch.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="squashoptionhelptext"></a>`helpText` | [`String!`](#string) | Help text for the squash option. |
+| <a id="squashoptionoption"></a>`option` | [`String!`](#string) | Human-readable description of the squash option. |
+
 ### `SshSignature`
 
 SSH signature for a signed commit.
@@ -35709,6 +35962,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="usercoreassignedmergerequestsapprovedby"></a>`approvedBy` | [`[String!]`](#string) | Usernames of the approvers. |
 | <a id="usercoreassignedmergerequestsapprover"></a>`approver` | [`[String!]`](#string) | Usernames of possible approvers. |
 | <a id="usercoreassignedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="usercoreassignedmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="usercoreassignedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="usercoreassignedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="usercoreassignedmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -35764,6 +36018,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="usercoreauthoredmergerequestsapprover"></a>`approver` | [`[String!]`](#string) | Usernames of possible approvers. |
 | <a id="usercoreauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="usercoreauthoredmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
+| <a id="usercoreauthoredmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="usercoreauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="usercoreauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="usercoreauthoredmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -35878,6 +36133,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="usercorereviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="usercorereviewrequestedmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="usercorereviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="usercorereviewrequestedmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="usercorereviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="usercorereviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="usercorereviewrequestedmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -36001,6 +36257,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="usercoretodosaction"></a>`action` | [`[TodoActionEnum!]`](#todoactionenum) | Action to be filtered. |
 | <a id="usercoretodosauthorid"></a>`authorId` | [`[ID!]`](#id) | ID of an author. |
 | <a id="usercoretodosgroupid"></a>`groupId` | [`[ID!]`](#id) | ID of a group. |
+| <a id="usercoretodosissnoozed"></a>`isSnoozed` | [`Boolean`](#boolean) | Whether the to-do item is snoozed. |
 | <a id="usercoretodosprojectid"></a>`projectId` | [`[ID!]`](#id) | ID of a project. |
 | <a id="usercoretodossort"></a>`sort` | [`TodoSort`](#todosort) | Sort todos by given criteria. |
 | <a id="usercoretodosstate"></a>`state` | [`[TodoStateEnum!]`](#todostateenum) | State of the todo. |
@@ -37592,26 +37849,6 @@ Represents a legacy requirement widget.
 | <a id="workitemwidgetrequirementlegacylegacyiid"></a>`legacyIid` **{warning-solid}** | [`Int`](#int) | **Deprecated** in GitLab 15.9. Use Work Item IID instead. |
 | <a id="workitemwidgetrequirementlegacytype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 
-### `WorkItemWidgetRolledupDates`
-
-Represents the rolledup dates widget.
-
-#### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="workitemwidgetrolledupdatesduedate"></a>`dueDate` | [`Date`](#date) | Due date for the work item. |
-| <a id="workitemwidgetrolledupdatesduedatefixed"></a>`dueDateFixed` | [`Date`](#date) | Fixed due date for the work item. |
-| <a id="workitemwidgetrolledupdatesduedateisfixed"></a>`dueDateIsFixed` | [`Boolean`](#boolean) | Indicates if the due date for the work item is fixed. |
-| <a id="workitemwidgetrolledupdatesduedatesourcingmilestone"></a>`dueDateSourcingMilestone` | [`Milestone`](#milestone) | Indicates which milestone sources the rolledup due date. |
-| <a id="workitemwidgetrolledupdatesduedatesourcingworkitem"></a>`dueDateSourcingWorkItem` | [`WorkItem`](#workitem) | Indicates which work_item sources the rolledup due date. |
-| <a id="workitemwidgetrolledupdatesstartdate"></a>`startDate` | [`Date`](#date) | Start date for the work item. |
-| <a id="workitemwidgetrolledupdatesstartdatefixed"></a>`startDateFixed` | [`Date`](#date) | Fixed start date for the work item. |
-| <a id="workitemwidgetrolledupdatesstartdateisfixed"></a>`startDateIsFixed` | [`Boolean`](#boolean) | Indicates if the start date for the work item is fixed. |
-| <a id="workitemwidgetrolledupdatesstartdatesourcingmilestone"></a>`startDateSourcingMilestone` | [`Milestone`](#milestone) | Indicates which milestone sources the rolledup start date. |
-| <a id="workitemwidgetrolledupdatesstartdatesourcingworkitem"></a>`startDateSourcingWorkItem` | [`WorkItem`](#workitem) | Indicates which work_item sources the rolledup start date. |
-| <a id="workitemwidgetrolledupdatestype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
-
 ### `WorkItemWidgetStartAndDueDate`
 
 Represents a start and due date widget.
@@ -38651,6 +38888,16 @@ Access level of a container registry protection rule resource.
 | <a id="containerprotectionrepositoryruleaccesslevelmaintainer"></a>`MAINTAINER` **{warning-solid}** | **Introduced** in GitLab 16.6. **Status**: Experiment. Maintainer access. |
 | <a id="containerprotectionrepositoryruleaccesslevelowner"></a>`OWNER` **{warning-solid}** | **Introduced** in GitLab 16.6. **Status**: Experiment. Owner access. |
 
+### `ContainerProtectionTagRuleAccessLevel`
+
+Access level of a container registry tag protection rule resource.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="containerprotectiontagruleaccessleveladmin"></a>`ADMIN` **{warning-solid}** | **Introduced** in GitLab 17.8. **Status**: Experiment. Admin access. |
+| <a id="containerprotectiontagruleaccesslevelmaintainer"></a>`MAINTAINER` **{warning-solid}** | **Introduced** in GitLab 17.8. **Status**: Experiment. Maintainer access. |
+| <a id="containerprotectiontagruleaccesslevelowner"></a>`OWNER` **{warning-solid}** | **Introduced** in GitLab 17.8. **Status**: Experiment. Owner access. |
+
 ### `ContainerRepositoryCleanupStatus`
 
 Status of the tags cleanup of a container repository.
@@ -39635,6 +39882,14 @@ Types of member approval status.
 | <a id="memberapprovalstatustypedenied"></a>`DENIED` | Denied promotion request. |
 | <a id="memberapprovalstatustypepending"></a>`PENDING` | Pending promotion request. |
 
+### `MemberRoleAdminPermission`
+
+Member role admin permission.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="memberroleadminpermissionread_admin_dashboard"></a>`READ_ADMIN_DASHBOARD` | Read-only access to admin dashboard. |
+
 ### `MemberRolePermission`
 
 Member role permission.
@@ -39666,6 +39921,37 @@ Member role permission.
 | <a id="memberrolepermissionread_vulnerability"></a>`READ_VULNERABILITY` | Read vulnerability reports and security dashboards. |
 | <a id="memberrolepermissionremove_group"></a>`REMOVE_GROUP` | Ability to delete or restore a group. This ability does not allow deleting top-level groups. Review the Retention period settings to prevent accidental deletion. |
 | <a id="memberrolepermissionremove_project"></a>`REMOVE_PROJECT` | Allows deletion of projects. |
+
+### `MemberRoleStandardPermission`
+
+Member role standard permission.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="memberrolestandardpermissionadmin_cicd_variables"></a>`ADMIN_CICD_VARIABLES` | Create, read, update, and delete CI/CD variables. |
+| <a id="memberrolestandardpermissionadmin_compliance_framework"></a>`ADMIN_COMPLIANCE_FRAMEWORK` | Create, read, update, and delete compliance frameworks. Users with this permission can also assign a compliance framework label to a project, and set the default framework of a group. |
+| <a id="memberrolestandardpermissionadmin_group_member"></a>`ADMIN_GROUP_MEMBER` | Add or remove users in a group, and assign roles to users. When assigning a role, users with this custom permission must select a role that has the same or fewer permissions as the default role used as the base for their custom role. |
+| <a id="memberrolestandardpermissionadmin_integrations"></a>`ADMIN_INTEGRATIONS` | Create, read, update, and delete integrations with external applications. |
+| <a id="memberrolestandardpermissionadmin_merge_request"></a>`ADMIN_MERGE_REQUEST` | Allows approval of merge requests. |
+| <a id="memberrolestandardpermissionadmin_protected_branch"></a>`ADMIN_PROTECTED_BRANCH` | Create, read, update, and delete protected branches for a project. |
+| <a id="memberrolestandardpermissionadmin_push_rules"></a>`ADMIN_PUSH_RULES` | Configure push rules for repositories at the group or project level. |
+| <a id="memberrolestandardpermissionadmin_runners"></a>`ADMIN_RUNNERS` | Create, view, edit, and delete group or project Runners. Includes configuring Runner settings. |
+| <a id="memberrolestandardpermissionadmin_terraform_state"></a>`ADMIN_TERRAFORM_STATE` | Execute terraform commands, lock/unlock terraform state files, and remove file versions. |
+| <a id="memberrolestandardpermissionadmin_vulnerability"></a>`ADMIN_VULNERABILITY` | Edit the vulnerability object, including the status and linking an issue. Includes the `read_vulnerability` permission actions. |
+| <a id="memberrolestandardpermissionadmin_web_hook"></a>`ADMIN_WEB_HOOK` | Manage webhooks. |
+| <a id="memberrolestandardpermissionarchive_project"></a>`ARCHIVE_PROJECT` | Allows archiving of projects. |
+| <a id="memberrolestandardpermissionmanage_deploy_tokens"></a>`MANAGE_DEPLOY_TOKENS` | Manage deploy tokens at the group or project level. |
+| <a id="memberrolestandardpermissionmanage_group_access_tokens"></a>`MANAGE_GROUP_ACCESS_TOKENS` | Create, read, update, and delete group access tokens. When creating a token, users with this custom permission must select a role for that token that has the same or fewer permissions as the default role used as the base for the custom role. |
+| <a id="memberrolestandardpermissionmanage_merge_request_settings"></a>`MANAGE_MERGE_REQUEST_SETTINGS` | Configure merge request settings at the group or project level. Group actions include managing merge checks and approval settings. Project actions include managing MR configurations, approval rules and settings, and branch targets. In order to enable Suggested reviewers, the "Manage project access tokens" custom permission needs to be enabled. |
+| <a id="memberrolestandardpermissionmanage_project_access_tokens"></a>`MANAGE_PROJECT_ACCESS_TOKENS` | Create, read, update, and delete project access tokens. When creating a token, users with this custom permission must select a role for that token that has the same or fewer permissions as the default role used as the base for the custom role. |
+| <a id="memberrolestandardpermissionmanage_security_policy_link"></a>`MANAGE_SECURITY_POLICY_LINK` | Allows linking security policy projects. |
+| <a id="memberrolestandardpermissionread_code"></a>`READ_CODE` | Allows read-only access to the source code in the user interface. Does not allow users to edit or download repository archives, clone or pull repositories, view source code in an IDE, or view merge requests for private projects. You can download individual files because read-only access inherently grants the ability to make a local copy of the file. |
+| <a id="memberrolestandardpermissionread_crm_contact"></a>`READ_CRM_CONTACT` | Read CRM contact. |
+| <a id="memberrolestandardpermissionread_dependency"></a>`READ_DEPENDENCY` | Allows read-only access to the dependencies and licenses. |
+| <a id="memberrolestandardpermissionread_runners"></a>`READ_RUNNERS` | Allows read-only access to group or project runners, including the runner fleet dashboard. |
+| <a id="memberrolestandardpermissionread_vulnerability"></a>`READ_VULNERABILITY` | Read vulnerability reports and security dashboards. |
+| <a id="memberrolestandardpermissionremove_group"></a>`REMOVE_GROUP` | Ability to delete or restore a group. This ability does not allow deleting top-level groups. Review the Retention period settings to prevent accidental deletion. |
+| <a id="memberrolestandardpermissionremove_project"></a>`REMOVE_PROJECT` | Allows deletion of projects. |
 
 ### `MemberRolesOrderBy`
 
@@ -40099,6 +40385,7 @@ Values for sorting package.
 | Value | Description |
 | ----- | ----------- |
 | <a id="packagestatusdefault"></a>`DEFAULT` | Packages with a default status. |
+| <a id="packagestatusdeprecated"></a>`DEPRECATED` | Packages with a deprecated status. |
 | <a id="packagestatuserror"></a>`ERROR` | Packages with a error status. |
 | <a id="packagestatushidden"></a>`HIDDEN` | Packages with a hidden status. |
 | <a id="packagestatuspending_destruction"></a>`PENDING_DESTRUCTION` | Packages with a pending_destruction status. |
@@ -40897,13 +41184,12 @@ Name of the feature that the callout is for.
 | <a id="usercalloutfeaturenameenumpersonal_project_limitations_banner"></a>`PERSONAL_PROJECT_LIMITATIONS_BANNER` | Callout feature name for personal_project_limitations_banner. |
 | <a id="usercalloutfeaturenameenumpipeline_needs_banner"></a>`PIPELINE_NEEDS_BANNER` | Callout feature name for pipeline_needs_banner. |
 | <a id="usercalloutfeaturenameenumpipeline_needs_hover_tip"></a>`PIPELINE_NEEDS_HOVER_TIP` | Callout feature name for pipeline_needs_hover_tip. |
+| <a id="usercalloutfeaturenameenumpipl_compliance_alert"></a>`PIPL_COMPLIANCE_ALERT` | Callout feature name for pipl_compliance_alert. |
 | <a id="usercalloutfeaturenameenumplanner_role_callout"></a>`PLANNER_ROLE_CALLOUT` | Callout feature name for planner_role_callout. |
 | <a id="usercalloutfeaturenameenumpreview_user_over_limit_free_plan_alert"></a>`PREVIEW_USER_OVER_LIMIT_FREE_PLAN_ALERT` | Callout feature name for preview_user_over_limit_free_plan_alert. |
 | <a id="usercalloutfeaturenameenumproduct_analytics_dashboard_feedback"></a>`PRODUCT_ANALYTICS_DASHBOARD_FEEDBACK` | Callout feature name for product_analytics_dashboard_feedback. |
 | <a id="usercalloutfeaturenameenumprofile_personal_access_token_expiry"></a>`PROFILE_PERSONAL_ACCESS_TOKEN_EXPIRY` | Callout feature name for profile_personal_access_token_expiry. |
 | <a id="usercalloutfeaturenameenumproject_quality_summary_feedback"></a>`PROJECT_QUALITY_SUMMARY_FEEDBACK` | Callout feature name for project_quality_summary_feedback. |
-| <a id="usercalloutfeaturenameenumproject_repository_limit_alert_alert_threshold"></a>`PROJECT_REPOSITORY_LIMIT_ALERT_ALERT_THRESHOLD` | Callout feature name for project_repository_limit_alert_alert_threshold. |
-| <a id="usercalloutfeaturenameenumproject_repository_limit_alert_error_threshold"></a>`PROJECT_REPOSITORY_LIMIT_ALERT_ERROR_THRESHOLD` | Callout feature name for project_repository_limit_alert_error_threshold. |
 | <a id="usercalloutfeaturenameenumproject_repository_limit_alert_warning_threshold"></a>`PROJECT_REPOSITORY_LIMIT_ALERT_WARNING_THRESHOLD` | Callout feature name for project_repository_limit_alert_warning_threshold. |
 | <a id="usercalloutfeaturenameenumregistration_enabled_callout"></a>`REGISTRATION_ENABLED_CALLOUT` | Callout feature name for registration_enabled_callout. |
 | <a id="usercalloutfeaturenameenumsecurity_configuration_devops_alert"></a>`SECURITY_CONFIGURATION_DEVOPS_ALERT` | Callout feature name for security_configuration_devops_alert. |
@@ -41337,7 +41623,6 @@ Type of a work item widget.
 | <a id="workitemwidgettypeparticipants"></a>`PARTICIPANTS` | Participants widget. |
 | <a id="workitemwidgettypeprogress"></a>`PROGRESS` | Progress widget. |
 | <a id="workitemwidgettyperequirement_legacy"></a>`REQUIREMENT_LEGACY` | Requirement Legacy widget. |
-| <a id="workitemwidgettyperolledup_dates"></a>`ROLLEDUP_DATES` | Rolledup Dates widget. |
 | <a id="workitemwidgettypestart_and_due_date"></a>`START_AND_DUE_DATE` | Start And Due Date widget. |
 | <a id="workitemwidgettypestatus"></a>`STATUS` | Status widget. |
 | <a id="workitemwidgettypetest_reports"></a>`TEST_REPORTS` | Test Reports widget. |
@@ -41700,6 +41985,12 @@ An example `ComplianceManagementFrameworkID` is: `"gid://gitlab/ComplianceManage
 A `ContainerRegistryProtectionRuleID` is a global ID. It is encoded as a string.
 
 An example `ContainerRegistryProtectionRuleID` is: `"gid://gitlab/ContainerRegistry::Protection::Rule/1"`.
+
+### `ContainerRegistryProtectionTagRuleID`
+
+A `ContainerRegistryProtectionTagRuleID` is a global ID. It is encoded as a string.
+
+An example `ContainerRegistryProtectionTagRuleID` is: `"gid://gitlab/ContainerRegistry::Protection::TagRule/1"`.
 
 ### `ContainerRepositoryID`
 
@@ -43126,6 +43417,7 @@ Implementations:
 
 Implementations:
 
+- [`AdminMemberRole`](#adminmemberrole)
 - [`MemberRole`](#memberrole)
 - [`StandardRole`](#standardrole)
 
@@ -43298,6 +43590,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="userassignedmergerequestsapprovedby"></a>`approvedBy` | [`[String!]`](#string) | Usernames of the approvers. |
 | <a id="userassignedmergerequestsapprover"></a>`approver` | [`[String!]`](#string) | Usernames of possible approvers. |
 | <a id="userassignedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="userassignedmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="userassignedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="userassignedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="userassignedmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -43353,6 +43646,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="userauthoredmergerequestsapprover"></a>`approver` | [`[String!]`](#string) | Usernames of possible approvers. |
 | <a id="userauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="userauthoredmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
+| <a id="userauthoredmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="userauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="userauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="userauthoredmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -43467,6 +43761,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="userreviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="userreviewrequestedmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="userreviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="userreviewrequestedmergerequestsblobpath"></a>`blobPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 17.7. **Status**: Experiment. Path of the blob changed in merge request. Requires state, targetBranches, and createdAfter arguments. Available only when the feature flag `filter_blob_path` is enabled. |
 | <a id="userreviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="userreviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="userreviewrequestedmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -43590,6 +43885,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="usertodosaction"></a>`action` | [`[TodoActionEnum!]`](#todoactionenum) | Action to be filtered. |
 | <a id="usertodosauthorid"></a>`authorId` | [`[ID!]`](#id) | ID of an author. |
 | <a id="usertodosgroupid"></a>`groupId` | [`[ID!]`](#id) | ID of a group. |
+| <a id="usertodosissnoozed"></a>`isSnoozed` | [`Boolean`](#boolean) | Whether the to-do item is snoozed. |
 | <a id="usertodosprojectid"></a>`projectId` | [`[ID!]`](#id) | ID of a project. |
 | <a id="usertodossort"></a>`sort` | [`TodoSort`](#todosort) | Sort todos by given criteria. |
 | <a id="usertodosstate"></a>`state` | [`[TodoStateEnum!]`](#todostateenum) | State of the todo. |
@@ -43639,7 +43935,6 @@ Implementations:
 - [`WorkItemWidgetParticipants`](#workitemwidgetparticipants)
 - [`WorkItemWidgetProgress`](#workitemwidgetprogress)
 - [`WorkItemWidgetRequirementLegacy`](#workitemwidgetrequirementlegacy)
-- [`WorkItemWidgetRolledupDates`](#workitemwidgetrolledupdates)
 - [`WorkItemWidgetStartAndDueDate`](#workitemwidgetstartandduedate)
 - [`WorkItemWidgetStatus`](#workitemwidgetstatus)
 - [`WorkItemWidgetTestReports`](#workitemwidgettestreports)
@@ -43746,6 +44041,15 @@ see the associated mutation type above.
 | <a id="aigeneratedescriptioninputcontent"></a>`content` | [`String!`](#string) | Content of the message. |
 | <a id="aigeneratedescriptioninputdescriptiontemplatename"></a>`descriptionTemplateName` | [`String`](#string) | Name of the description template to use to generate message off of. |
 | <a id="aigeneratedescriptioninputresourceid"></a>`resourceId` | [`AiModelID!`](#aimodelid) | Global ID of the resource to mutate. |
+
+### `AiMeasureCommentTemperatureInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="aimeasurecommenttemperatureinputcontent"></a>`content` | [`String!`](#string) | Content of the message. |
+| <a id="aimeasurecommenttemperatureinputresourceid"></a>`resourceId` | [`AiModelID!`](#aimodelid) | Global ID of the resource to mutate. |
 
 ### `AiResolveVulnerabilityInput`
 
@@ -44720,17 +45024,6 @@ Attributes for value stream stage.
 | <a id="workitemwidgetprogressinputcurrentvalue"></a>`currentValue` | [`Int!`](#int) | Current progress value of the work item. |
 | <a id="workitemwidgetprogressinputendvalue"></a>`endValue` | [`Int`](#int) | End value of the work item. |
 | <a id="workitemwidgetprogressinputstartvalue"></a>`startValue` | [`Int`](#int) | Start value of the work item. |
-
-### `WorkItemWidgetRolledupDatesInput`
-
-#### Arguments
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="workitemwidgetrolledupdatesinputduedatefixed"></a>`dueDateFixed` | [`Date`](#date) | Fixed due date for the work item. |
-| <a id="workitemwidgetrolledupdatesinputduedateisfixed"></a>`dueDateIsFixed` | [`Boolean`](#boolean) | When due_date_fixed is not provided it defaults to `false`. |
-| <a id="workitemwidgetrolledupdatesinputstartdatefixed"></a>`startDateFixed` | [`Date`](#date) | Fixed start date for the work item. |
-| <a id="workitemwidgetrolledupdatesinputstartdateisfixed"></a>`startDateIsFixed` | [`Boolean`](#boolean) | When start_date_fixed is not provided it defaults to `false`. |
 
 ### `WorkItemWidgetStartAndDueDateUpdateInput`
 
