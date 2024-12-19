@@ -63,10 +63,7 @@ module QA
           has_element?('login-page', wait: 0)
         end
 
-        def sign_in_using_credentials(user: nil, skip_page_validation: false)
-          # Don't try to log-in if we're already logged-in
-          return if Page::Main::Menu.perform(&:signed_in?)
-
+        def sign_in_using_credentials(user: nil, skip_page_validation: false, raise_on_invalid_login: true)
           using_wait_time 0 do
             set_initial_password_if_present
 
@@ -75,10 +72,12 @@ module QA
             if test_user.ldap_user?
               sign_in_using_ldap_credentials(user: test_user)
             else
-              sign_in_using_gitlab_credentials(user: test_user, skip_page_validation: skip_page_validation)
+              sign_in_using_gitlab_credentials(
+                user: test_user,
+                skip_page_validation: skip_page_validation,
+                raise_on_invalid_login: raise_on_invalid_login
+              )
             end
-
-            set_up_new_password_if_required(user: test_user, skip_page_validation: skip_page_validation)
           end
         end
 
@@ -87,8 +86,6 @@ module QA
             set_initial_password_if_present
             sign_in_using_gitlab_credentials(user: admin_user)
           end
-
-          set_up_new_password_if_required(user: admin_user, skip_page_validation: false)
 
           Page::Main::Menu.perform(&:has_personal_area?)
         end
@@ -190,24 +187,16 @@ module QA
           Runtime::Browser.visit(address, Page::Main::Login)
         end
 
-        private
-
-        # Handle request for password change
-        # Happens on clean GDK installations when seeded root admin password is expired
-        #
-        def set_up_new_password_if_required(user:, skip_page_validation:)
-          Support::WaitForRequests.wait_for_requests
-          return unless has_content?('Update password for', wait: 1)
-
+        def set_up_new_password(user:)
           Profile::Password.perform do |new_password_page|
             password = user.password
             new_password_page.set_new_password(password, password)
           end
-
-          sign_in_using_credentials(user: user, skip_page_validation: skip_page_validation)
         end
 
-        def sign_in_using_gitlab_credentials(user:, skip_page_validation: false)
+        private
+
+        def sign_in_using_gitlab_credentials(user:, skip_page_validation: false, raise_on_invalid_login: true)
           wait_if_retry_later
 
           switch_to_sign_in_tab if has_sign_in_tab?(wait: 0)
@@ -223,12 +212,15 @@ module QA
 
           wait_for_gitlab_to_respond
 
-          # For debugging invalid login attempts
-          has_notice?('Invalid login or password')
+          if raise_on_invalid_login && has_notice?('Invalid login or password')
+            raise Runtime::User::InvalidCredentialsError, "Invalid credentials for #{user.username}"
+          end
 
           # Return if new password page is shown
           # Happens on clean GDK installations when seeded root admin password is expired
-          return if has_content?('Update password for', wait: 1)
+          if has_content?('Update password for', wait: 0)
+            raise Runtime::User::ExpiredPasswordError, "Password for #{user.username} is expired and must be reset"
+          end
 
           Page::Main::Terms.perform do |terms|
             terms.accept_terms if terms.visible?

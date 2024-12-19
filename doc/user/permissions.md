@@ -4,7 +4,7 @@ group: Authorization
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Permissions and roles
+# Roles and permissions
 
 DETAILS:
 **Tier:** Free, Premium, Ultimate
@@ -82,7 +82,7 @@ Project permissions for [analytics](../user/analytics/index.md) features includi
 | View [DORA metrics](analytics/ci_cd_analytics.md)                                          |       |         |    ✓     |     ✓     |     ✓      |   ✓   |       |
 | View [merge request analytics](analytics/merge_request_analytics.md)                       |       |         |    ✓     |     ✓     |     ✓      |   ✓   |       |
 | View [repository analytics](analytics/repository_analytics.md)                             |       |         |    ✓     |     ✓     |     ✓      |   ✓   |       |
-| View [Value Streams Dashboard & AI Impact analytics](analytics/value_streams_dashboard.md) |       |         |    ✓     |     ✓     |     ✓      |   ✓   |       |
+| View [Value Streams Dashboard & AI impact analytics](analytics/value_streams_dashboard.md) |       |         |    ✓     |     ✓     |     ✓      |   ✓   |       |
 
 ### Application security
 
@@ -193,10 +193,9 @@ Project permissions for [model registry](project/ml/model_registry/index.md) and
 | View [models and versions](project/ml/model_registry/index.md)    |   ✓   |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   | Non-members can only view models and versions in public projects with the **Everyone with access** visibility level. Non-members can't view internal projects, even if they're logged in. |
 | View [model experiments](project/ml/experiment_tracking/index.md) |   ✓   |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   | Non-members can only view model experiments in public projects with the **Everyone with access** visibility level. Non-members can't view internal projects, even if they're logged in. |
 | Create models, versions, and artifacts                            |       |         |          |     ✓     |     ✓      |   ✓   | You can also upload and download artifacts with the package registry API, which uses it's own set of permissions. |
-| Edit models, versions, and artifacts                              |       |         |          |     ✓     |     ✓      |   ✓   |       |
+| Edit & delete models, versions, and artifacts                     |       |         |          |     ✓     |     ✓      |   ✓   |       |
 | Create experiments and candidates                                 |       |         |          |     ✓     |     ✓      |   ✓   |       |
-| Edit experiments and candidates                                   |       |         |          |     ✓     |     ✓      |   ✓   |       |
-| Delete experiments and candidates                                 |       |         |          |     ✓     |     ✓      |   ✓   |       |
+| Edit & delete experiments and candidates                          |       |         |          |     ✓     |     ✓      |   ✓   |       |
 
 ### Monitoring
 
@@ -249,15 +248,16 @@ Project permissions for [issues](project/issues/index.md):
 
 Project permissions for [tasks](tasks.md):
 
-| Action            | Guest | Planner | Reporter | Developer | Maintainer | Owner | Notes |
-| ----------------- | :---: | :-----: | :------: | :-------: | :--------: | :---: | ----- |
-| View tasks        |   ✓   |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   |       |
-| Create tasks      |   ✓   |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   | Guest users can create tasks for issues they authored. Authors and assignees can modify the title and description even if they don't have the Reporter role. |
-| Add a linked item |   ✓   |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   |       |
-| Remove from issue |   ✓   |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   |       |
-| Edit tasks        |       |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   |       |
-| Add internal note |       |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   |       |
-| Delete tasks      |       |    ✓    |          |           |            |   ✓   | Authors of tasks can delete them even if they don't have the Owner role. |
+| Action                       | Guest | Planner | Reporter | Developer | Maintainer | Owner | Notes |
+| ---------------------------- | :---: | :-----: | :------: | :-------: | :--------: | :---: | ----- |
+| View tasks                   |   ✓   |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   |       |
+| Create tasks                 |   ✓   |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   | Guest users can create tasks for issues they authored. Authors and assignees can modify the title and description even if they don't have the Reporter role. |
+| Add a linked item            |   ✓   |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   |       |
+| Convert to another item type |   ✓   |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   |       |
+| Remove from issue            |   ✓   |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   |       |
+| Edit tasks                   |       |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   |       |
+| Add internal note            |       |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   |       |
+| Delete tasks                 |       |    ✓    |          |           |            |   ✓   | Authors of tasks can delete them even if they don't have the Owner role. |
 
 Project permissions for [OKRs](okrs.md):
 
@@ -267,6 +267,7 @@ Project permissions for [OKRs](okrs.md):
 | Create OKRs                   |   ✓   |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   |       |
 | Add a child OKR               |   ✓   |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   |       |
 | Add a linked item             |   ✓   |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   |       |
+| Convert to another item type  |   ✓   |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   |       |
 | Edit OKRs                     |       |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   |       |
 | Change confidentiality in OKR |       |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   |       |
 | Add internal note             |       |    ✓    |    ✓     |     ✓     |     ✓      |   ✓   |       |

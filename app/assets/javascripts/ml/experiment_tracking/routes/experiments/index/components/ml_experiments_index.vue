@@ -1,10 +1,11 @@
 <script>
-import { GlTableLite, GlEmptyState, GlLink } from '@gitlab/ui';
+import { GlTableLite, GlEmptyState, GlLink, GlButton, GlModalDirective } from '@gitlab/ui';
 import { FEATURE_NAME, FEATURE_FEEDBACK_ISSUE } from '~/ml/experiment_tracking/constants';
 import * as constants from '~/ml/experiment_tracking/routes/experiments/index/constants';
 import * as translations from '~/ml/experiment_tracking/routes/experiments/index/translations';
 import ModelExperimentsHeader from '~/ml/experiment_tracking/components/model_experiments_header.vue';
 import Pagination from '~/ml/experiment_tracking/components/pagination.vue';
+import { MLFLOW_USAGE_MODAL_ID } from '../constants';
 
 export default {
   name: 'MlExperimentsIndexApp',
@@ -14,6 +15,15 @@ export default {
     GlTableLite,
     GlEmptyState,
     GlLink,
+    GlButton,
+  },
+  directives: {
+    GlModal: GlModalDirective,
+  },
+  provide() {
+    return {
+      mlflowTrackingUrl: this.mlflowTrackingUrl,
+    };
   },
   props: {
     experiments: {
@@ -27,6 +37,11 @@ export default {
     emptyStateSvgPath: {
       type: String,
       required: true,
+    },
+    mlflowTrackingUrl: {
+      type: String,
+      required: false,
+      default: '',
     },
   },
   tableFields: constants.EXPERIMENTS_TABLE_FIELDS,
@@ -47,6 +62,7 @@ export default {
     FEATURE_FEEDBACK_ISSUE,
     ...constants,
   },
+  mlflowModalId: MLFLOW_USAGE_MODAL_ID,
 };
 </script>
 
@@ -69,12 +85,20 @@ export default {
     <gl-empty-state
       v-else
       :title="$options.i18n.EMPTY_STATE_TITLE_LABEL"
-      :primary-button-text="$options.i18n.CREATE_NEW_LABEL"
-      :primary-button-link="$options.constants.CREATE_EXPERIMENT_HELP_PATH"
       :svg-path="emptyStateSvgPath"
       :svg-height="null"
       :description="$options.i18n.EMPTY_STATE_DESCRIPTION_LABEL"
       class="gl-py-8"
-    />
+    >
+      <template #actions>
+        <gl-button
+          v-gl-modal="$options.mlflowModalId"
+          data-testid="empty-create-using-button"
+          class="gl-mx-2 gl-mb-3 gl-mr-3"
+        >
+          {{ $options.i18n.CREATE_USING_MLFLOW_LABEL }}
+        </gl-button>
+      </template>
+    </gl-empty-state>
   </div>
 </template>

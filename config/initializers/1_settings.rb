@@ -980,6 +980,15 @@ Gitlab.ee do
     Settings.cron_jobs['click_house_audit_events_sync_worker']['cron'] ||= "*/3 * * * *"
     Settings.cron_jobs['click_house_audit_events_sync_worker']['job_class'] = 'ClickHouse::AuditEventsSyncWorker'
     Settings.cron_jobs['gitlab_subscriptions_offline_cloud_license_provision_worker']['status'] = 'disabled'
+    Settings.cron_jobs['send_recurring_notifications_worker'] ||= {}
+    Settings.cron_jobs['send_recurring_notifications_worker']['cron'] ||= '0 7 * * *'
+    Settings.cron_jobs['send_recurring_notifications_worker']['job_class'] =
+      'ComplianceManagement::Pipl::SendRecurringNotificationsWorker'
+
+    Settings.cron_jobs['block_pipl_users_worker'] ||= {}
+    Settings.cron_jobs['block_pipl_users_worker']['cron'] ||= '0 8 * * *'
+    Settings.cron_jobs['block_pipl_users_worker']['job_class'] =
+      'ComplianceManagement::Pipl::BlockPiplUsersWorker'
   end
 
   Gitlab.jh do
@@ -1079,7 +1088,13 @@ Gitlab.ee do
   # Default to proxy via Cloud Connector
   unless Settings.duo_workflow['service_url'].present?
     cloud_connector_uri = URI.parse(Settings.cloud_connector.base_url)
-    Settings.duo_workflow['service_url'] = "#{cloud_connector_uri.host}:#{cloud_connector_uri.port}"
+
+    # Cloudflare has been disabled untill
+    # gets resolved https://gitlab.com/gitlab-org/gitlab/-/issues/509586
+    # Settings.duo_workflow['service_url'] = "#{cloud_connector_uri.host}:#{cloud_connector_uri.port}"
+
+    service_url = "duo-workflow#{cloud_connector_uri.host.include?('staging') ? '.staging' : ''}.runway.gitlab.net:#{cloud_connector_uri.port}"
+    Settings.duo_workflow['service_url'] = service_url
     Settings.duo_workflow['secure'] = cloud_connector_uri.scheme == 'https'
   end
 end

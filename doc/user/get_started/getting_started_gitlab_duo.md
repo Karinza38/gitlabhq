@@ -32,7 +32,7 @@ For more information, see:
 - [Features included in Duo Pro and Duo Enterprise](https://about.gitlab.com/gitlab-duo/#pricing).
 - [List of GitLab Duo features and their language models](../gitlab_duo/index.md).
 - [Self-hosted models](../../administration/self_hosted_models/index.md).
-- [Health check details](../gitlab_duo/turn_on_off.md#run-a-health-check-for-gitlab-duo).
+- [Health check details](../gitlab_duo/setup.md#run-a-health-check-for-gitlab-duo).
 
 ## Step 2: Try Duo Chat in the UI
 
@@ -74,12 +74,12 @@ Then you can confirm that GitLab Duo is available in your IDE and test some of t
 
 For more information, see:
 
-- [Set up the extension for VS Code](../../editor_extensions/visual_studio_code/index.md).
-- [Set up the extension for JetBrains](../../editor_extensions/jetbrains_ide/index.md).
-- [Set up the extension for Visual Studio](../../editor_extensions/visual_studio/index.md).
-- [Set up the extension for Neovim](../../editor_extensions/neovim/index.md).
+- [Set up the extension for VS Code](../../editor_extensions/visual_studio_code/setup.md).
+- [Set up the extension for JetBrains](../../editor_extensions/jetbrains_ide/setup.md).
+- [Set up the extension for Visual Studio](../../editor_extensions/visual_studio/setup.md).
+- [Set up the extension for Neovim](../../editor_extensions/neovim/setup.md).
 
-## Step 5: Turn on Code Suggestions in your IDE
+## Step 5: Confirm that Code Suggestions is on in your IDE
 
 Finally, go to the settings for the extension and confirm that Code Suggestions is enabled,
 as well as the languages you want suggestions for.
@@ -94,4 +94,4 @@ Then test Code Suggestions and Duo Chat in your IDE.
 For more information, see:
 
 - [Supported extensions and languages](../project/repository/code_suggestions/supported_extensions.md).
-- [Code Suggestions](../project/repository/code_suggestions/index.md#use-code-suggestions).
+- [Turn on Code Suggestions](../project/repository/code_suggestions/set_up.md#turn-on-code-suggestions).

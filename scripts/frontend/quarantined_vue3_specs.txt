@@ -89,10 +89,8 @@ ee/spec/frontend/security_configuration/components/app_spec.js
 ee/spec/frontend/security_configuration/components/dynamic_fields_spec.js
 ee/spec/frontend/security_configuration/components/expandable_section_spec.js
 ee/spec/frontend/security_configuration/dast_profiles/components/dast_profiles_list_spec.js
-ee/spec/frontend/security_dashboard/components/shared/empty_states/dashboard_has_no_vulnerabilities_spec.js
 ee/spec/frontend/security_dashboard/components/shared/filters/querystring_sync_spec.js
 ee/spec/frontend/security_dashboard/components/shared/vulnerability_details_graphql/details_section_spec.js
-ee/spec/frontend/security_dashboard/components/shared/vulnerability_report/container_scanning_for_registry_tab_spec.js
 ee/spec/frontend/security_dashboard/components/shared/vulnerability_report/vulnerability_list_graphql_spec.js
 ee/spec/frontend/security_dashboard/components/shared/vulnerability_report/vulnerability_report_spec.js
 ee/spec/frontend/security_dashboard/components/shared/vulnerability_report/vulnerability_report_tabs_spec.js
@@ -108,7 +106,6 @@ ee/spec/frontend/vue_merge_request_widget/components/mr_widget_pipeline_containe
 ee/spec/frontend/vue_merge_request_widget/components/states/mr_widget_ready_to_merge_spec.js
 ee/spec/frontend/vue_shared/components/groups_list/groups_list_item_spec.js
 ee/spec/frontend/vue_shared/components/projects_list/projects_list_item_spec.js
-ee/spec/frontend/vue_shared/security_reports/components/security_training_promo_spec.js
 ee/spec/frontend/vulnerabilities/generic_report/types/list_graphql_spec.js
 ee/spec/frontend/vulnerabilities/related_issues_spec.js
 spec/frontend/__helpers__/vue_test_utils_helper_spec.js
@@ -128,7 +125,6 @@ spec/frontend/boards/components/board_content_spec.js
 spec/frontend/boards/components/board_form_spec.js
 spec/frontend/boards/components/board_options_spec.js
 spec/frontend/boards/components/board_settings_sidebar_spec.js
-spec/frontend/boards/components/board_top_bar_spec.js
 spec/frontend/boards/components/toggle_focus_spec.js
 spec/frontend/boards/project_select_spec.js
 spec/frontend/branches/components/delete_branch_modal_spec.js
@@ -213,7 +209,6 @@ spec/frontend/lib/utils/breadcrumbs_spec.js
 spec/frontend/lib/utils/confirm_via_gl_modal/confirm_action_spec.js
 spec/frontend/members/components/app_spec.js
 spec/frontend/members/components/modals/leave_modal_spec.js
-spec/frontend/members/components/table/drawer/role_details_drawer_spec.js
 spec/frontend/members/components/table/max_role_spec.js
 spec/frontend/members/components/table/members_pagination_spec.js
 spec/frontend/members/components/table/members_table_spec.js
@@ -253,7 +248,6 @@ spec/frontend/pages/shared/wikis/components/delete_wiki_modal_spec.js
 spec/frontend/pages/shared/wikis/components/wiki_more_dropdown_spec.js
 spec/frontend/performance_bar/index_spec.js
 spec/frontend/pipeline_wizard/components/step_spec.js
-spec/frontend/profile/preferences/components/integration_view_spec.js
 spec/frontend/profile/preferences/components/profile_preferences_spec.js
 spec/frontend/projects/commit/components/form_modal_spec.js
 spec/frontend/projects/commits/components/author_select_spec.js
@@ -274,7 +268,6 @@ spec/frontend/releases/components/tag_create_spec.js
 spec/frontend/releases/components/tag_field_exsting_spec.js
 spec/frontend/releases/components/tag_search_spec.js
 spec/frontend/repository/components/header_area/blob_controls_spec.js
-spec/frontend/repository/components/header_area/breadcrumbs_spec.js
 spec/frontend/repository/components/table/index_spec.js
 spec/frontend/repository/components/table/row_spec.js
 spec/frontend/repository/router_spec.js
@@ -289,7 +282,6 @@ spec/frontend/sidebar/components/assignees/sidebar_assignees_widget_spec.js
 spec/frontend/sidebar/components/confidential/confidentiality_dropdown_spec.js
 spec/frontend/sidebar/components/confidential/sidebar_confidentiality_widget_spec.js
 spec/frontend/sidebar/components/incidents/escalation_status_spec.js
-spec/frontend/sidebar/components/incidents/sidebar_escalation_status_spec.js
 spec/frontend/sidebar/components/labels/labels_select_vue/dropdown_contents_labels_view_spec.js
 spec/frontend/sidebar/components/labels/labels_select_vue/labels_select_root_spec.js
 spec/frontend/sidebar/components/labels/labels_select_widget/dropdown_contents_spec.js

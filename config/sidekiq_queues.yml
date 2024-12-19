@@ -31,8 +31,6 @@
   - 1
 - - ai_repository_xray_scan_dependencies
   - 1
-- - ai_store_repository_xray
-  - 1
 - - analytics_code_review_metrics
   - 1
 - - analytics_devops_adoption_create_snapshot
@@ -387,6 +385,8 @@
   - 1
 - - gitlab_subscriptions_add_on_purchases_email_on_duo_bulk_user_assignments
   - 1
+- - gitlab_subscriptions_add_on_purchases_ldap_add_on_seat_sync
+  - 1
 - - gitlab_subscriptions_add_on_purchases_refresh_user_assignments
   - 1
 - - gitlab_subscriptions_member_management_apply_pending_member_approvals
@@ -540,6 +540,8 @@
 - - merge_requests_create_approvals_reset_note
   - 1
 - - merge_requests_delete_source_branch
+  - 1
+- - merge_requests_duo_code_review_chat
   - 1
 - - merge_requests_execute_approval_hooks
   - 1
@@ -787,6 +789,8 @@
   - 1
 - - search_zoekt_namespace_initial_indexing
   - 1
+- - search_zoekt_node_with_negative_unclaimed_storage_event
+  - 1
 - - search_zoekt_orphaned_index_event
   - 1
 - - search_zoekt_orphaned_repo_event
@@ -958,6 +962,4 @@
 - - work_items_validate_epic_work_item_sync
   - 1
 - - x509_certificate_revoke
-  - 1
-- - zoekt_indexer
   - 1

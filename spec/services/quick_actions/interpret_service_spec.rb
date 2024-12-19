@@ -2292,15 +2292,15 @@ RSpec.describe QuickActions::InterpretService, feature_category: :text_editors d
 
       expect(Gitlab::UsageDataCounters::QuickActionActivityUniqueCounter)
         .to receive(:track_unique_action)
-        .with('shrug', args: 'test', user: developer)
+        .with('shrug', args: 'test', user: developer, project: project)
 
       expect(Gitlab::UsageDataCounters::QuickActionActivityUniqueCounter)
         .to receive(:track_unique_action)
-        .with('assign', args: 'me', user: developer)
+        .with('assign', args: 'me', user: developer, project: project)
 
       expect(Gitlab::UsageDataCounters::QuickActionActivityUniqueCounter)
         .to receive(:track_unique_action)
-        .with('milestone', args: '%4', user: developer)
+        .with('milestone', args: '%4', user: developer, project: project)
 
       service.execute(content, issue)
     end
@@ -3698,8 +3698,12 @@ RSpec.describe QuickActions::InterpretService, feature_category: :text_editors d
       context 'when user has permissions' do
         it '/relate command is available' do
           _, explanations = service.explain(relate_content, issue)
-          translated_string = _("Marks this issue as related to %{issue}.")
-          formatted_message = format(translated_string, issue: other_issue.to_s)
+          translated_string = _("Added %{target} as a linked item related to this %{work_item_type}.")
+          formatted_message = format(
+            translated_string,
+            target: other_issue,
+            work_item_type: "issue"
+          )
 
           expect(explanations).to eq([formatted_message])
         end

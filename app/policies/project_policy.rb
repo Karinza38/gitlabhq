@@ -209,7 +209,7 @@ class ProjectPolicy < BasePolicy
 
   with_scope :subject
   condition(:model_experiments_enabled) do
-    Feature.enabled?(:ml_experiment_tracking, @subject) && @subject.feature_available?(:model_experiments, @user)
+    @subject.feature_available?(:model_experiments, @user)
   end
 
   with_scope :subject
@@ -364,6 +364,8 @@ class ProjectPolicy < BasePolicy
     enable :manage_owners
 
     enable :add_catalog_resource
+
+    enable :destroy_pipeline
   end
 
   rule { can?(:guest_access) }.policy do
@@ -397,6 +399,7 @@ class ProjectPolicy < BasePolicy
     enable :update_issue
     enable :reopen_issue
     enable :admin_issue
+    enable :admin_work_item
     enable :destroy_issue
     enable :read_confidential_issues
     enable :create_design
@@ -438,6 +441,7 @@ class ProjectPolicy < BasePolicy
     enable :update_issue
     enable :reopen_issue
     enable :admin_issue
+    enable :admin_work_item
     enable :admin_label
     enable :admin_milestone
     enable :admin_issue_board_list
