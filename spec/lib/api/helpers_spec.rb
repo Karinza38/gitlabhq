@@ -273,7 +273,7 @@ RSpec.describe API::Helpers, feature_category: :shared do
       context 'user is authenticated with a job token from another project and fine grained policies are enabled' do
         let_it_be(:runner_project) { create(:project) }
         let_it_be(:job) { create(:ci_build, project: runner_project) }
-        let_it_be(:allowed_job_token_policy) { ::Ci::JobToken::Policies.all_policies.pick(:value) }
+        let_it_be(:allowed_job_token_policy) { ::Ci::JobToken::Policies::POLICIES.first }
         let_it_be(:job_token_policy) { allowed_job_token_policy }
 
         before do
@@ -868,6 +868,13 @@ RSpec.describe API::Helpers, feature_category: :shared do
       let(:non_existing_id) { non_existing_record_id }
 
       it_behaves_like 'namespace finder'
+
+      it 'find the namespace from up-to-date replica or primary DB' do
+        allow(Namespace.sticking).to receive(:find_caught_up_replica).and_call_original
+
+        expect(Namespace.sticking).to receive(:find_caught_up_replica).with(:namespace, existing_id)
+        expect(helper.find_namespace(existing_id)).to eq(namespace)
+      end
     end
 
     context 'when PATH is used as an argument' do

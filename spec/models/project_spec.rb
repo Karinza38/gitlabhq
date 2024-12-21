@@ -4071,6 +4071,61 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
     end
   end
 
+  describe '#notify_project_import_complete?' do
+    let(:import_type) { 'gitlab_project' }
+    let(:project) { build(:project, import_type: import_type) }
+
+    before do
+      allow(project).to receive(:forked?).and_return(false)
+    end
+
+    it 'returns false for forked projects' do
+      allow(project).to receive(:forked?).and_return(true)
+
+      expect(project.notify_project_import_complete?).to be(false)
+    end
+
+    it 'returns false for projects with a remote mirror' do
+      allow(project).to receive(:mirror?).and_return(true)
+
+      expect(project.notify_project_import_complete?).to be(false)
+    end
+
+    it 'returns false for unsupported import types' do
+      project.import_type = 'gitlab_project'
+
+      expect(project.notify_project_import_complete?).to be(false)
+    end
+
+    %w[github gitea bitbucket bitbucket_server].each do |import_type|
+      it "returns true for #{import_type}" do
+        project.import_type = import_type
+        expect(project.notify_project_import_complete?).to be(true)
+      end
+    end
+  end
+
+  describe '#safe_import_url' do
+    let_it_be(:import_url) { 'https://example.com' }
+    let_it_be(:project) do
+      create(
+        :project,
+        import_url: import_url,
+        import_data_attributes: { credentials: { user: 'user', password: 'password' } }
+      )
+    end
+
+    it 'returns import_url with credentials masked' do
+      expect(project.safe_import_url).to include('*****:*****')
+    end
+
+    it 'returns import_url with no credentials, masked or not' do
+      safe_import_url = project.safe_import_url(masked: false)
+
+      expect(safe_import_url).to eq(import_url)
+    end
+  end
+
   describe '#jira_import?' do
     let_it_be(:project) { build(:project, import_type: 'jira') }
     let_it_be(:jira_import) { build(:jira_import_state, project: project) }
@@ -4148,6 +4203,18 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
     subject(:project) { build(:project, import_type: 'gitea') }
 
     it { expect(project.gitea_import?).to be true }
+  end
+
+  describe '#bitbucket_import?' do
+    subject(:project) { build(:project, import_type: 'bitbucket') }
+
+    it { expect(project.bitbucket_import?).to be true }
+  end
+
+  describe '#bitbucket_server_import?' do
+    subject(:project) { build(:project, import_type: 'bitbucket_server') }
+
+    it { expect(project.bitbucket_server_import?).to be true }
   end
 
   describe '#any_import_in_progress?' do
@@ -8259,31 +8326,6 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
       it 'includes self, ancestors and linked groups' do
         expect(project.related_group_ids).to contain_exactly(group.id, sub_group.id, linked_group.id)
       end
-    end
-  end
-
-  # TODO: Remove with the rollout of the FF npm_extract_npm_package_model
-  # https://gitlab.com/gitlab-org/gitlab/-/issues/501469
-  describe '#has_namespaced_npm_packages?' do
-    let_it_be(:namespace) { create(:namespace, path: 'test') }
-    let_it_be(:project) { create(:project, :public, namespace: namespace) }
-
-    subject { project.has_namespaced_npm_packages? }
-
-    context 'with scope of the namespace path' do
-      let_it_be(:package) { create(:npm_package, project: project, name: "@#{namespace.path}/foo") }
-
-      it { is_expected.to be true }
-    end
-
-    context 'without scope of the namespace path' do
-      let_it_be(:package) { create(:npm_package, project: project, name: "@someotherscope/foo") }
-
-      it { is_expected.to be false }
-    end
-
-    context 'without packages' do
-      it { is_expected.to be false }
     end
   end
 

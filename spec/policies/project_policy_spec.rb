@@ -117,7 +117,21 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       let(:current_user) { planner }
       let(:project) { private_project }
 
+      it { expect_disallowed(*(mr_permissions - [:read_merge_request])) }
+    end
+
+    context "for a reporter in a private project" do
+      let(:current_user) { reporter }
+      let(:project) { private_project }
+
       it { expect_disallowed(*(mr_permissions - [:read_merge_request, :create_merge_request_in])) }
+    end
+
+    context "for a developer in a private project" do
+      let(:current_user) { developer }
+      let(:project) { private_project }
+
+      it { expect_allowed(*mr_permissions) }
     end
   end
 
@@ -175,7 +189,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   context 'creating_merge_request_in' do
-    context 'when the current_user can download_code' do
+    context 'when the current_user can download code' do
       before do
         expect(subject).to receive(:allowed?).with(:download_code).and_return(true)
         allow(subject).to receive(:allowed?).with(any_args).and_call_original
@@ -217,7 +231,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         context 'when the current_user is planner' do
           let(:current_user) { planner }
 
-          it { is_expected.to be_allowed(:create_merge_request_in) }
+          it { is_expected.not_to be_allowed(:create_merge_request_in) }
         end
 
         context 'when the current_user is reporter or above' do
@@ -281,62 +295,47 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   context 'pipeline feature' do
     let(:project)      { private_project }
     let(:current_user) { developer }
-    let(:pipeline)     { create(:ci_pipeline, project: project) }
 
     describe 'for confirmed user' do
-      it 'allows modify pipelines' do
-        expect_allowed(:create_pipeline)
-        expect_allowed(:update_pipeline)
-        expect_allowed(:cancel_pipeline)
-        expect_allowed(:create_pipeline_schedule)
-        expect_allowed(:read_ci_pipeline_schedules_plan_limit)
-      end
+      it { is_expected.to be_allowed(:create_pipeline) }
+      it { is_expected.to be_allowed(:update_pipeline) }
+      it { is_expected.to be_allowed(:cancel_pipeline) }
+      it { is_expected.to be_allowed(:create_pipeline_schedule) }
+      it { is_expected.to be_allowed(:read_ci_pipeline_schedules_plan_limit) }
     end
 
     describe 'for unconfirmed user' do
       let(:current_user) { project.first_owner.tap { |u| u.update!(confirmed_at: nil) } }
 
-      it 'disallows to modify pipelines' do
-        expect_disallowed(:create_pipeline)
-        expect_disallowed(:update_pipeline)
-        expect_disallowed(:cancel_pipeline)
-        expect_disallowed(:destroy_pipeline)
-        expect_disallowed(:create_pipeline_schedule)
-        expect_disallowed(:read_ci_pipeline_schedules_plan_limit)
-      end
+      it { is_expected.not_to be_allowed(:create_pipeline) }
+      it { is_expected.not_to be_allowed(:update_pipeline) }
+      it { is_expected.not_to be_allowed(:cancel_pipeline) }
+      it { is_expected.not_to be_allowed(:create_pipeline_schedule) }
+      it { is_expected.not_to be_allowed(:read_ci_pipeline_schedules_plan_limit) }
     end
 
     describe 'destroy permission' do
       describe 'for developers' do
-        it 'prevents :destroy_pipeline' do
-          expect(current_user.can?(:destroy_pipeline, pipeline)).to be_falsey
-        end
+        it { is_expected.not_to be_allowed(:destroy_pipeline) }
       end
 
       describe 'for maintainers' do
         let(:current_user) { maintainer }
 
-        it 'prevents :destroy_pipeline' do
-          project.add_maintainer(maintainer)
-          expect(current_user.can?(:destroy_pipeline, pipeline)).to be_falsey
-        end
+        it { is_expected.not_to be_allowed(:destroy_pipeline) }
       end
 
       describe 'for project owner' do
         let(:current_user) { project.first_owner }
 
-        it 'allows :destroy_pipeline' do
-          expect(current_user.can?(:destroy_pipeline, pipeline)).to be_truthy
-        end
+        it { is_expected.to be_allowed(:destroy_pipeline) }
 
         context 'on archived projects' do
           before do
             project.update!(archived: true)
           end
 
-          it 'prevents :destroy_pipeline' do
-            expect(current_user.can?(:destroy_pipeline, pipeline)).to be_falsey
-          end
+          it { is_expected.not_to be_allowed(:destroy_pipeline) }
         end
 
         context 'on archived pending_delete projects' do
@@ -344,9 +343,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
             project.update!(archived: true, pending_delete: true)
           end
 
-          it 'allows :destroy_pipeline' do
-            expect(current_user.can?(:destroy_pipeline, pipeline)).to be_truthy
-          end
+          it { is_expected.to be_allowed(:destroy_pipeline) }
         end
       end
     end
@@ -3487,7 +3484,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
           :maintainer | true
           :developer  | true
           :reporter   | true
-          :planner    | true
+          :planner    | false
           :guest      | false
         end
 
@@ -3912,36 +3909,34 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   describe ':write_model_experiments' do
     using RSpec::Parameterized::TableSyntax
 
-    where(:ff_ml_experiment_tracking, :current_user, :access_level, :allowed) do
-      false | ref(:owner)      | Featurable::ENABLED  | false
-      true  | ref(:anonymous)  | Featurable::ENABLED  | false
-      true  | ref(:anonymous)  | Featurable::PRIVATE  | false
-      true  | ref(:anonymous)  | Featurable::DISABLED | false
-      true  | ref(:non_member) | Featurable::ENABLED  | false
-      true  | ref(:non_member) | Featurable::PRIVATE  | false
-      true  | ref(:non_member) | Featurable::DISABLED | false
-      true  | ref(:guest)      | Featurable::ENABLED  | false
-      true  | ref(:guest)      | Featurable::PRIVATE  | false
-      true  | ref(:guest)      | Featurable::DISABLED | false
-      true  | ref(:planner)    | Featurable::ENABLED  | false
-      true  | ref(:planner)    | Featurable::PRIVATE  | false
-      true  | ref(:planner)    | Featurable::DISABLED | false
-      true  | ref(:reporter)   | Featurable::ENABLED  | false
-      true  | ref(:reporter)   | Featurable::PRIVATE  | false
-      true  | ref(:reporter)   | Featurable::DISABLED | false
-      true  | ref(:developer)  | Featurable::ENABLED  | true
-      true  | ref(:developer)  | Featurable::PRIVATE  | true
-      true  | ref(:developer)  | Featurable::DISABLED | false
-      true  | ref(:maintainer) | Featurable::ENABLED  | true
-      true  | ref(:maintainer) | Featurable::PRIVATE  | true
-      true  | ref(:maintainer) | Featurable::DISABLED | false
-      true  | ref(:owner)      | Featurable::ENABLED  | true
-      true  | ref(:owner)      | Featurable::PRIVATE  | true
-      true  | ref(:owner)      | Featurable::DISABLED | false
+    where(:current_user, :access_level, :allowed) do
+      ref(:anonymous)  | Featurable::ENABLED  | false
+      ref(:anonymous)  | Featurable::PRIVATE  | false
+      ref(:anonymous)  | Featurable::DISABLED | false
+      ref(:non_member) | Featurable::ENABLED  | false
+      ref(:non_member) | Featurable::PRIVATE  | false
+      ref(:non_member) | Featurable::DISABLED | false
+      ref(:guest)      | Featurable::ENABLED  | false
+      ref(:guest)      | Featurable::PRIVATE  | false
+      ref(:guest)      | Featurable::DISABLED | false
+      ref(:planner)    | Featurable::ENABLED  | false
+      ref(:planner)    | Featurable::PRIVATE  | false
+      ref(:planner)    | Featurable::DISABLED | false
+      ref(:reporter)   | Featurable::ENABLED  | false
+      ref(:reporter)   | Featurable::PRIVATE  | false
+      ref(:reporter)   | Featurable::DISABLED | false
+      ref(:developer)  | Featurable::ENABLED  | true
+      ref(:developer)  | Featurable::PRIVATE  | true
+      ref(:developer)  | Featurable::DISABLED | false
+      ref(:maintainer) | Featurable::ENABLED  | true
+      ref(:maintainer) | Featurable::PRIVATE  | true
+      ref(:maintainer) | Featurable::DISABLED | false
+      ref(:owner)      | Featurable::ENABLED  | true
+      ref(:owner)      | Featurable::PRIVATE  | true
+      ref(:owner)      | Featurable::DISABLED | false
     end
     with_them do
       before do
-        stub_feature_flags(ml_experiment_tracking: ff_ml_experiment_tracking)
         project.project_feature.update!(model_experiments_access_level: access_level)
       end
 

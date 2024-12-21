@@ -12,9 +12,9 @@ DETAILS:
 
 > - Introduced in GitLab 17.1 as an [experiment](../../../policy/development_stages_support.md) for Python.
 > - Support for Go and Java added in 17.2.
-> - [Changed](https://gitlab.com/gitlab-org/gitlab/-/issues/461859) to beta in GitLab 17.2.
-> - Support for JavaScript, TypeScript and C# added in 17.3.
-> - [Changed](https://gitlab.com/gitlab-org/gitlab/-/issues/474094) to GA in GitLab 17.3.
+> - [Changed](https://gitlab.com/gitlab-org/gitlab/-/issues/461859) from experiment to beta in GitLab 17.2.
+> - Support for JavaScript, TypeScript, and C# added in 17.3.
+> - [Generally available](https://gitlab.com/gitlab-org/gitlab/-/issues/474094) in GitLab 17.3.
 > - Support for Java Server Pages (JSP) added in GitLab 17.4.
 
 GitLab Advanced SAST is a Static Application Security Testing (SAST) analyzer
@@ -163,11 +163,12 @@ The code flow information is shown the **Code flow** tab and includes:
 The code flow view is integrated into each view where vulnerability details are shown.
 On GitLab self-managed, you can activate the view by [enabling the required feature flags](../../../administration/feature_flags.md#how-to-enable-and-disable-features-behind-flags) starting in the minimum version shown.
 
-| Location                                                        | Availability on GitLab.com        | Availability on GitLab self-managed                                   | Feature flags required                                                |
-|-----------------------------------------------------------------|-----------------------------------|-----------------------------------------------------------------------|-----------------------------------------------------------------------|
-| [Vulnerability Report](../vulnerability_report/index.md)        | Enabled by default in GitLab 17.3 | Enabled by default in GitLab 17.6. Available in GitLab 17.3 or later. | `vulnerability_code_flow`                                             |
-| [Merge request widget](index.md#merge-request-widget)           | Enabled by default in GitLab 17.6 | Enabled by default in GitLab 17.6. Available in GitLab 17.5 or later. | Both `vulnerability_code_flow` and `pipeline_vulnerability_code_flow` |
-| [Pipeline security report](../vulnerability_report/pipeline.md) | Enabled by default in GitLab 17.6 | Enabled by default in GitLab 17.6. Available in GitLab 17.5 or later. | Both `vulnerability_code_flow` and `pipeline_vulnerability_code_flow` |
+| Location                                                          | Availability on GitLab.com        | Availability on GitLab self-managed                                   | Feature flags required                                                |
+|-------------------------------------------------------------------|-----------------------------------|-----------------------------------------------------------------------|-----------------------------------------------------------------------|
+| [Vulnerability Report](../vulnerability_report/index.md)          | Enabled by default in GitLab 17.3 | Enabled by default in GitLab 17.6. Available in GitLab 17.3 or later. | `vulnerability_code_flow`                                             |
+| [Merge request widget](index.md#merge-request-widget)             | Enabled by default in GitLab 17.6 | Enabled by default in GitLab 17.6. Available in GitLab 17.5 or later. | Both `vulnerability_code_flow` and `pipeline_vulnerability_code_flow` |
+| [Pipeline security report](../vulnerability_report/pipeline.md)   | Enabled by default in GitLab 17.6 | Enabled by default in GitLab 17.6. Available in GitLab 17.5 or later. | Both `vulnerability_code_flow` and `pipeline_vulnerability_code_flow` |
+| [Merge request changes view](index.md#merge-request-changes-view) | Enabled by default in GitLab 17.7 | Enabled by default in GitLab 17.7. Available in GitLab 17.7 or later. | Both `vulnerability_code_flow` and `mr_vulnerability_code_flow`       |
 
 ## Troubleshooting
 

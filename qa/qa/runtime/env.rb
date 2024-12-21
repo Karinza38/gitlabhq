@@ -10,7 +10,6 @@ module QA
       extend self
 
       attr_writer :gitlab_url
-      attr_accessor :dry_run
 
       ENV_VARIABLES = Gitlab::QA::Runtime::Env::ENV_VARIABLES
 
@@ -285,58 +284,6 @@ module QA
         ENV['QA_GITHUB_PASSWORD']
       end
 
-      def gitlab_qa_username_1
-        ENV['GITLAB_QA_USERNAME_1'] || 'gitlab-qa-user1'
-      end
-
-      def gitlab_qa_password_1
-        ENV['GITLAB_QA_PASSWORD_1']
-      end
-
-      def gitlab_qa_access_token_1
-        ENV['GITLAB_QA_ACCESS_TOKEN_1']
-      end
-
-      def gitlab_qa_username_2
-        ENV['GITLAB_QA_USERNAME_2'] || 'gitlab-qa-user2'
-      end
-
-      def gitlab_qa_password_2
-        ENV['GITLAB_QA_PASSWORD_2']
-      end
-
-      def gitlab_qa_username_3
-        ENV['GITLAB_QA_USERNAME_3'] || 'gitlab-qa-user3'
-      end
-
-      def gitlab_qa_password_3
-        ENV['GITLAB_QA_PASSWORD_3']
-      end
-
-      def gitlab_qa_username_4
-        ENV['GITLAB_QA_USERNAME_4'] || 'gitlab-qa-user4'
-      end
-
-      def gitlab_qa_password_4
-        ENV['GITLAB_QA_PASSWORD_4']
-      end
-
-      def gitlab_qa_username_5
-        ENV['GITLAB_QA_USERNAME_5'] || 'gitlab-qa-user5'
-      end
-
-      def gitlab_qa_password_5
-        ENV['GITLAB_QA_PASSWORD_5']
-      end
-
-      def gitlab_qa_username_6
-        ENV['GITLAB_QA_USERNAME_6'] || 'gitlab-qa-user6'
-      end
-
-      def gitlab_qa_password_6
-        ENV['GITLAB_QA_PASSWORD_6']
-      end
-
       def jira_admin_username
         ENV['QA_JIRA_ADMIN_USERNAME']
       end
@@ -524,10 +471,6 @@ module QA
         QA::Runtime::Scenario.attributes.include?(:geo_secondary_address)
       end
 
-      def transient_trials
-        ENV.fetch('GITLAB_QA_TRANSIENT_TRIALS', 10).to_i
-      end
-
       def gitlab_tls_certificate
         ENV['GITLAB_TLS_CERTIFICATE']
       end
@@ -709,6 +652,20 @@ module QA
       # @return [Boolean]
       def no_admin_environment?
         enabled?(ENV["QA_NO_ADMIN_ENV"], default: false) || gitlab_host == "gitlab.com"
+      end
+
+      # Test run type
+      #
+      # @return [String]
+      def run_type
+        ENV["QA_RUN_TYPE"].presence
+      end
+
+      # Execution performed with --dry-run flag
+      #
+      # @return [Boolean]
+      def dry_run
+        enabled?(ENV["QA_RSPEC_DRY_RUN"], default: false)
       end
 
       private

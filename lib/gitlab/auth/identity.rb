@@ -17,6 +17,7 @@ module Gitlab
       UnexpectedIdentityError = Class.new(IdentityError)
       TooManyIdentitiesLinkedError = Class.new(IdentityError)
       MissingCompositeIdentityError = Class.new(::Gitlab::Access::AccessDeniedError)
+      MissingServiceAccountError = Class.new(::Gitlab::Access::AccessDeniedError)
 
       # TODO: why is this called 3 times in doorkeeper_access_spec.rb specs?
       def self.link_from_oauth_token(oauth_token)
@@ -26,10 +27,26 @@ module Gitlab
       end
 
       def self.link_from_job(job)
-        return unless Feature.enabled?(:composite_identity_in_ci, job&.user)
-
         fabricate(job.user).tap do |identity|
           identity.link!(job.scoped_user) if identity&.composite?
+        end
+      end
+
+      def self.link_from_scoped_user_id(user, scoped_user_id)
+        scoped_user = ::User.find_by_id(scoped_user_id)
+
+        return unless scoped_user
+
+        ::Gitlab::Auth::Identity.fabricate(user).tap do |identity|
+          identity.link!(scoped_user) if identity&.composite?
+        end
+      end
+
+      def self.link_from_web_request(service_account:, scoped_user:)
+        raise MissingServiceAccountError, 'service account is required' unless service_account
+
+        fabricate(service_account).tap do |identity|
+          identity.link!(scoped_user) if identity&.composite?
         end
       end
 
@@ -49,7 +66,11 @@ module Gitlab
           .store[COMPOSITE_IDENTITY_USERS_KEY]
           .to_a.first
 
-        yield new(user) if user.present?
+        return unless user.present?
+
+        identity = new(user)
+
+        block_given? ? yield(identity) : identity
       end
 
       def self.fabricate(user)
@@ -75,8 +96,12 @@ module Gitlab
         return self unless composite_identity_enabled?
         return self unless scope_user
 
+        ##
+        # TODO: consider extracting linking to ::Gitlab::Auth::Identities::Link#create!
+        #
         validate_link!(scope_user)
         store_identity_link!(scope_user)
+        append_log!(scope_user)
 
         self
       end
@@ -131,6 +156,10 @@ module Gitlab
         composite_identities.add(@user)
 
         raise TooManyIdentitiesLinkedError if composite_identities.size > 1
+      end
+
+      def append_log!(scope_user)
+        ::Gitlab::ApplicationContext.push(scoped_user: scope_user)
       end
 
       def composite_identities

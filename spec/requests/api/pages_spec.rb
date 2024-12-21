@@ -18,7 +18,7 @@ RSpec.describe API::Pages, feature_category: :pages do
       pages_unique_domain: 'unique-domain')
   end
 
-  context "when get pages setting endpoint" do
+  describe "GET /projects/:id/pages" do
     let(:user) { create(:user) }
 
     it "returns the :ok for project maintainers (and above)" do
@@ -82,7 +82,7 @@ RSpec.describe API::Pages, feature_category: :pages do
             "created_at" => created_at.strftime('%Y-%m-%dT%H:%M:%S.%3LZ'),
             "path_prefix" => nil,
             "root_directory" => "public",
-            "url" => "http://unique-domain.example.com/"
+            "url" => "http://unique-domain.example.com"
           }
         ])
       end

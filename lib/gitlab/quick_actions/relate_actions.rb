@@ -7,12 +7,20 @@ module Gitlab
       include ::Gitlab::QuickActions::Dsl
 
       included do
-        desc { _('Mark this issue as related to another issue') }
+        desc { _('Link items related to this item') }
         explanation do |target_issues|
-          _('Marks this issue as related to %{issue_ref}.') % { issue_ref: target_issues.to_sentence }
+          format(
+            _('Added %{target} as a linked item related to this %{work_item_type}.'),
+            target: target_issues.to_sentence,
+            work_item_type: work_item_type(quick_action_target)
+          )
         end
         execution_message do |target_issues|
-          _('Marked this issue as related to %{issue_ref}.') % { issue_ref: target_issues.to_sentence }
+          format(
+            _('Added %{target} as a linked item related to this %{work_item_type}.'),
+            target: target_issues.to_sentence,
+            work_item_type: work_item_type(quick_action_target)
+          )
         end
         params '<#issue | group/project#issue | issue URL>'
         types Issue
@@ -22,12 +30,12 @@ module Gitlab
           create_links(target_issues)
         end
 
-        desc { _("Remove link with another issue") }
+        desc { _("Remove linked item") }
         explanation do |issue|
-          _('Removes link with %{issue_ref}.') % { issue_ref: issue.to_reference(quick_action_target) }
+          _('Removes linked item %{issue_ref}.') % { issue_ref: issue.to_reference(quick_action_target) }
         end
         execution_message do |issue|
-          _('Removed link with %{issue_ref}.') % { issue_ref: issue.to_reference(quick_action_target) }
+          _('Removed linked item %{issue_ref}.') % { issue_ref: issue.to_reference(quick_action_target) }
         end
         params '<#issue | group/project#issue | issue URL>'
         types Issue
@@ -72,6 +80,10 @@ module Gitlab
 
         def format_params(issue_references)
           issue_references.split(' ')
+        end
+
+        def work_item_type(work_item)
+          work_item.work_item_type.name.downcase
         end
       end
     end

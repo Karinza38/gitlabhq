@@ -14,7 +14,8 @@ RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
       'merge_request_diff_files_99208b8fac', # has a desired sharding key instead
       'ml_model_metadata', # has a desired sharding key instead.
       'p_ci_pipeline_variables', # has a desired sharding key instead
-      'sbom_occurrences_vulnerabilities' # has desired sharding key instead
+      'sbom_occurrences_vulnerabilities', # has desired sharding key instead
+      'web_hook_logs_daily' # temporary copy of web_hook_logs
     ]
   end
 
@@ -200,10 +201,15 @@ RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
       "uploads" => "https://gitlab.com/gitlab-org/gitlab/-/issues/398199"
     }
 
+    # Link to any discussions for tables where an exception to this rule was agreed.
+    exceptions = {
+      "bulk_import_entities" => "https://gitlab.com/gitlab-org/gitlab/-/issues/463854#note_2162355315"
+    }
+
     has_lfk = ->(lfks) { lfks.any? { |k| k.options[:column] == 'organization_id' && k.to_table == 'organizations' } }
 
     organization_id_columns = ApplicationRecord.connection.select_rows(sql)
-    checks = organization_id_columns.reject { |column| work_in_progress[column[0]] }
+    checks = organization_id_columns.reject { |column| work_in_progress[column[0]] || exceptions[column[0]] }
     messages = checks.filter_map do |check|
       table_name, *violations = check
 
@@ -267,15 +273,6 @@ RSpec.describe 'new tables missing sharding_key', feature_category: :cell do
     tables_exempted_from_sharding_table_names = tables_exempted_from_sharding.map(&:table_name)
 
     tables_exempted_from_sharding.each do |entry|
-      # See https://gitlab.com/gitlab-org/gitlab/-/issues/471182
-      tables_to_be_fixed = %w[geo_nodes]
-
-      if entry.table_name.in?(tables_to_be_fixed)
-        puts "The table #{entry.table_name} needs to be fixed"
-
-        next
-      end
-
       fks = referenced_foreign_keys(entry.table_name).to_a
 
       fks.reject! { |fk| fk.constrained_table_name.in?(tables_exempted_from_sharding_table_names) }

@@ -41,8 +41,8 @@ Prerequisites:
 - You must have the Owner role.
 
 1. On the left sidebar, select **Search or go to** and find your group.
-1. Select **Settings > Usage Quotas**.
-1. Select the **GitLab Duo** tab.
+1. Select **Settings > GitLab Duo**.
+1. By **Seat utilization**, select **Assign seats**.
 1. Select **Add seats**.
 1. In the Customers Portal, in the **Add additional seats** field, enter the number of seats. The amount
    cannot be higher than the number of seats in the subscription associated with your group namespace.
@@ -85,7 +85,7 @@ To use GitLab Duo features in any project or group, you must assign the user to 
 
 1. On the left sidebar, select **Search or go to** and find your group.
 1. Select **Settings > GitLab Duo**.
-1. Select **Assign seats** on the **Seat utilization** card.
+1. By **Seat utilization**, select **Assign seats**.
 1. To the right of the user, turn on the toggle to assign a GitLab Duo seat.
 
 The user is sent a confirmation email.
@@ -103,7 +103,7 @@ Prerequisites:
      1. On the left sidebar, select **Subscription**.
      1. In **Subscription details**, to the right of **Last sync**, select
         synchronize subscription (**{retry}**).
-1. Select **Assign seats** on the **Seat utilization** card.
+1. By **Seat utilization**, select **Assign seats**.
 1. To the right of the user, turn on the toggle to assign a GitLab Duo seat.
 
 The user is sent a confirmation email.
@@ -118,6 +118,10 @@ you must [enable network connectivity](../user/ai_features_enable.md).
 ## Assign and remove GitLab Duo seats in bulk
 
 You can assign or remove seats in bulk for multiple users.
+
+### SAML Group Sync
+
+GitLab.com groups can use SAML Group Sync to [manage GitLab Duo seat assignments](../user/group/saml_sso/group_sync.md#gitlab-duo-seat-assignment).
 
 ### For GitLab.com
 
@@ -151,6 +155,18 @@ Prerequisites:
 
 Administrators of self-managed instances can also use a [Rake task](../raketasks/user_management.md#bulk-assign-users-to-gitlab-duo-pro) to assign or remove seats in bulk.
 
+#### Managing GitLab Duo seats with LDAP configuration
+
+You can automatically assign and remove GitLab Duo seats for LDAP-enabled users based on LDAP group membership.
+
+To enable this functionality, you must [configure the `duo_add_on_groups` property](../administration/auth/ldap/ldap_synchronization.md#gitlab-duo-add-on-for-groups) in your LDAP settings.
+
+When `duo_add_on_groups` is configured, it becomes the single source of truth for Duo seat management among LDAP-enabled users.
+For more information, see [seat assignment workflow](../administration/duo_add_on_seat_management_with_ldap.md#seat-management-workflow).
+
+This automated process ensures that Duo seats are efficiently allocated based on your organization's LDAP group structure.
+For more information, see [GitLab Duo add-on seat management with LDAP](../administration/duo_add_on_seat_management_with_ldap.md).
+
 ## View assigned GitLab Duo users
 
 Prerequisites:
@@ -167,7 +183,7 @@ Prerequisites:
 
 1. On the left sidebar, select **Search or go to** and find your group.
 1. Select **Settings > GitLab Duo**.
-1. Select **Assign seats** on the **Seat utilization** card.
+1. By **Seat utilization**, select **Assign seats**.
 1. From the filter bar, select **Assigned seat** and **Yes**.
 1. User list is filtered to only users assigned a GitLab Duo seat.
 
@@ -185,7 +201,7 @@ Prerequisites:
      1. On the left sidebar, select **Subscription**.
      1. In **Subscription details**, to the right of **Last sync**, select
         synchronize subscription (**{retry}**).
-1. Select **Assign seats** on the **Seat utilization** card.
+1. By **Seat utilization**, select **Assign seats**.
 1. To filter by users assigned to a GitLab Duo seat, in the **Filter users** bar, select **Assigned seat**, then select **Yes**.
 1. User list is filtered to only users assigned a GitLab Duo seat.
 

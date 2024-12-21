@@ -1569,8 +1569,15 @@ class Project < ApplicationRecord
     import_url.present?
   end
 
-  def safe_import_url
-    Gitlab::UrlSanitizer.new(import_url).masked_url
+  def notify_project_import_complete?
+    return false if import_type.nil? || mirror? || forked?
+
+    gitea_import? || github_import? || bitbucket_import? || bitbucket_server_import?
+  end
+
+  def safe_import_url(masked: true)
+    url = Gitlab::UrlSanitizer.new(import_url)
+    masked ? url.masked_url : url.sanitized_url
   end
 
   def jira_import?
@@ -1591,6 +1598,14 @@ class Project < ApplicationRecord
 
   def github_import?
     import_type == 'github'
+  end
+
+  def bitbucket_import?
+    import_type == 'bitbucket'
+  end
+
+  def bitbucket_server_import?
+    import_type == 'bitbucket_server'
   end
 
   def github_enterprise_import?
@@ -3110,14 +3125,6 @@ class Project < ApplicationRecord
           .id_not_in(id)
           .select(:id)
       ).exists?
-  end
-
-  # TODO: Remove with the rollout of the FF npm_extract_npm_package_model
-  # https://gitlab.com/gitlab-org/gitlab/-/issues/501469
-  def has_namespaced_npm_packages?
-    packages.with_npm_scope(root_namespace.path)
-            .not_pending_destruction
-            .exists?
   end
 
   def default_branch_or_main

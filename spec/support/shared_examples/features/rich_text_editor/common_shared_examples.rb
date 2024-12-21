@@ -36,6 +36,29 @@ RSpec.shared_examples 'rich text editor - common' do
   end
 
   describe 'rendering with initial content' do
+    it 'serializes basic markdown content properly' do
+      find('textarea').set('')
+
+      switch_to_content_editor
+
+      expect(page).to have_css(content_editor_testid)
+
+      type_in_content_editor "hello world"
+      type_in_content_editor :enter
+      type_in_content_editor "* list item 1"
+      type_in_content_editor :enter
+      type_in_content_editor "list item 2"
+
+      wait_until_hidden_field_is_updated(/list item/)
+
+      switch_to_markdown_editor
+
+      expect(page.find('textarea').value).to include('hello world
+
+* list item 1
+* list item 2')
+    end
+
     it 'renders correctly with table as initial content' do
       textarea = find 'textarea'
       textarea.send_keys "\n\n"
@@ -47,6 +70,30 @@ RSpec.shared_examples 'rich text editor - common' do
       switch_to_content_editor
 
       expect(page).not_to have_text('An error occurred')
+    end
+
+    it 'renders correctly with checklist as initial content' do
+      textarea = find 'textarea'
+      textarea.send_keys "\n\n"
+      textarea.send_keys "- [ ] checklist\n"
+      # remove auto inserted `- [ ] `
+      textarea.send_keys [:backspace] * 6
+      textarea.send_keys "  - [ ] nested checklist\n"
+      textarea.send_keys "nested checklist 2"
+
+      switch_to_content_editor
+
+      # check the checkbox titled `nested checklist`
+      within content_editor_testid do
+        all("[type=checkbox]")[1].click
+      end
+      wait_until_hidden_field_is_updated(/\[x\]/)
+
+      switch_to_markdown_editor
+
+      expect(page.find('textarea').value).to include('- [ ] checklist
+  - [x] nested checklist
+  - [ ] nested checklist 2')
     end
   end
 

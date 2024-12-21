@@ -242,6 +242,9 @@ gem 'faraday_middleware-aws-sigv4', '~> 1.0.1', feature_category: :global_search
 # Used with Elasticsearch to support http keep-alive connections
 gem 'typhoeus', '~> 1.4.0', feature_category: :global_search
 
+gem 'gitlab-active-context', path: 'gems/gitlab-active-context', require: 'active_context',
+  feature_category: :global_search
+
 # Markdown and HTML processing
 gem 'html-pipeline', '~> 2.14.3', feature_category: :markdown
 gem 'deckar01-task_list', '2.3.4', feature_category: :markdown
@@ -386,9 +389,9 @@ gem 'gitlab-license', '~> 2.6', feature_category: :shared
 gem 'rack-attack', '~> 6.7.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # Sentry integration
-gem 'sentry-ruby', '~> 5.21.0', feature_category: :observability
-gem 'sentry-rails', '~> 5.21.0', feature_category: :observability
-gem 'sentry-sidekiq', '~> 5.21.0', feature_category: :observability
+gem 'sentry-ruby', '~> 5.22.0', feature_category: :observability
+gem 'sentry-rails', '~> 5.22.0', feature_category: :observability
+gem 'sentry-sidekiq', '~> 5.22.0', feature_category: :observability
 
 # PostgreSQL query parsing
 #
@@ -487,6 +490,11 @@ group :development do
   gem 'ruby-lsp-rspec', "~> 0.1.10", require: false, feature_category: :tooling
 
   gem 'gdk-toogle', '~> 0.9', '>= 0.9.5', require: 'toogle', feature_category: :tooling
+
+  # Used by
+  # * `lib/tasks/gitlab/security/update_banned_ssh_keys.rake`
+  # * `lib/tasks/gitlab/db/migration_squash.rake`
+  gem 'git', '~> 1.8', feature_category: :shared
 end
 
 group :development, :test do
@@ -592,7 +600,7 @@ group :test do
   # Moved in `test` because https://gitlab.com/gitlab-org/gitlab/-/issues/217527
   gem 'derailed_benchmarks', require: false # rubocop:todo Gemfile/MissingFeatureCategory
 
-  gem 'gitlab_quality-test_tooling', '~> 2.3.0', require: false, feature_category: :tooling
+  gem 'gitlab_quality-test_tooling', '~> 2.4.0', require: false, feature_category: :tooling
 end
 
 gem 'octokit', '~> 9.0', feature_category: :importers
@@ -632,7 +640,7 @@ gem 'spamcheck', '~> 1.3.0' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'gitaly', '~> 17.5.0.pre.rc1', feature_category: :gitaly
 
 # KAS GRPC protocol definitions
-gem 'gitlab-kas-grpc', '~> 17.6.1', feature_category: :deployment_management
+gem 'gitlab-kas-grpc', '~> 17.7.0', feature_category: :deployment_management
 
 # Lock the version before issues below are resolved:
 # https://gitlab.com/gitlab-org/gitlab/-/issues/473169#note_2028352939

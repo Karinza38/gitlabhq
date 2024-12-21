@@ -14,11 +14,14 @@ import { __, s__, n__, sprintf } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { TYPENAME_GROUP } from '~/graphql_shared/constants';
 import CrudComponent from '~/vue_shared/components/crud_component.vue';
+import ConfirmActionModal from '~/vue_shared/components/confirm_action_modal.vue';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import inboundRemoveProjectCIJobTokenScopeMutation from '../graphql/mutations/inbound_remove_project_ci_job_token_scope.mutation.graphql';
 import inboundRemoveGroupCIJobTokenScopeMutation from '../graphql/mutations/inbound_remove_group_ci_job_token_scope.mutation.graphql';
 import inboundUpdateCIJobTokenScopeMutation from '../graphql/mutations/inbound_update_ci_job_token_scope.mutation.graphql';
 import inboundGetCIJobTokenScopeQuery from '../graphql/queries/inbound_get_ci_job_token_scope.query.graphql';
 import inboundGetGroupsAndProjectsWithCIJobTokenScopeQuery from '../graphql/queries/inbound_get_groups_and_projects_with_ci_job_token_scope.query.graphql';
+import getCiJobTokenScopeAllowlistQuery from '../graphql/queries/get_ci_job_token_scope_allowlist.query.graphql';
 import TokenAccessTable from './token_access_table.vue';
 import NamespaceForm from './namespace_form.vue';
 
@@ -39,6 +42,11 @@ export default {
     projectsFetchError: __('There was a problem fetching the projects'),
     scopeFetchError: __('There was a problem fetching the job token scope value'),
     saveButtonTitle: __('Save Changes'),
+    removeNamespaceModalTitle: __('Remove %{namespace}'),
+    removeNamespaceModalText: s__(
+      'CICD|Are you sure you want to remove %{namespace} from the job token allowlist?',
+    ),
+    removeNamespaceModalActionText: s__('CICD|Remove group or project'),
   },
   inboundJobTokenScopeOptions: [
     {
@@ -61,10 +69,12 @@ export default {
     TokenAccessTable,
     GlFormRadioGroup,
     NamespaceForm,
+    ConfirmActionModal,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: ['enforceAllowlist', 'fullPath'],
   apollo: {
     inboundJobTokenScopeEnabled: {
@@ -83,13 +93,29 @@ export default {
       },
     },
     groupsAndProjectsWithAccess: {
-      query: inboundGetGroupsAndProjectsWithCIJobTokenScopeQuery,
+      query() {
+        return this.isJobTokenPoliciesEnabled
+          ? getCiJobTokenScopeAllowlistQuery
+          : inboundGetGroupsAndProjectsWithCIJobTokenScopeQuery;
+      },
       variables() {
         return { fullPath: this.fullPath };
       },
       update({ project }) {
-        const projects = project?.ciJobTokenScope?.inboundAllowlist?.nodes ?? [];
-        const groups = project?.ciJobTokenScope?.groupsAllowlist?.nodes ?? [];
+        let groups;
+        let projects;
+
+        if (this.isJobTokenPoliciesEnabled) {
+          const allowlist = project?.ciJobTokenScopeAllowlist;
+          groups = this.mapAllowlistNodes(allowlist?.groupsAllowlist);
+          projects = this.mapAllowlistNodes(allowlist?.projectsAllowlist);
+          // Add a dummy entry for the current project. The new ciJobTokenScopeAllowlist endpoint doesn't have an entry
+          // for the current project like the old ciJobTokenScope endpoint did, so we have to add it in manually.
+          projects.push({ ...project, defaultPermissions: true, jobTokenPolicies: [] });
+        } else {
+          projects = project?.ciJobTokenScope?.inboundAllowlist?.nodes ?? [];
+          groups = project?.ciJobTokenScope?.groupsAllowlist?.nodes ?? [];
+        }
 
         return { projects, groups };
       },
@@ -104,9 +130,14 @@ export default {
       isUpdating: false,
       groupsAndProjectsWithAccess: { groups: [], projects: [] },
       projectName: '',
+      namespaceToEdit: null,
+      namespaceToRemove: null,
     };
   },
   computed: {
+    isJobTokenPoliciesEnabled() {
+      return this.glFeatures.addPoliciesToCiJobToken;
+    },
     ciJobTokenHelpPage() {
       return helpPagePath('ci/jobs/ci_job_token', {
         anchor: 'control-job-token-access-to-your-project',
@@ -131,8 +162,22 @@ export default {
     isAllowlistLoading() {
       return this.$apollo.queries.groupsAndProjectsWithAccess.loading;
     },
+    removeNamespaceModalTitle() {
+      return sprintf(this.$options.i18n.removeNamespaceModalTitle, {
+        namespace: this.namespaceToRemove?.fullPath,
+      });
+    },
   },
   methods: {
+    mapAllowlistNodes(list) {
+      // The defaultPermissions and jobTokenPolicies are separate fields from the target (the group or project in the
+      // allowlist). Combine them into a single object.
+      return list.nodes.map((node) => ({
+        ...node.target,
+        defaultPermissions: node.defaultPermissions,
+        jobTokenPolicies: node.jobTokenPolicies,
+      }));
+    },
     async updateCIJobTokenScope() {
       this.isUpdating = true;
 
@@ -167,30 +212,32 @@ export default {
         this.isUpdating = false;
       }
     },
-    async removeItem(item) {
-      try {
-        const mutation =
-          item.__typename === TYPENAME_GROUP // eslint-disable-line no-underscore-dangle
-            ? inboundRemoveGroupCIJobTokenScopeMutation
-            : inboundRemoveProjectCIJobTokenScopeMutation;
+    async removeItem() {
+      const { __typename, fullPath } = this.namespaceToRemove;
+      const mutation =
+        __typename === TYPENAME_GROUP
+          ? inboundRemoveGroupCIJobTokenScopeMutation
+          : inboundRemoveProjectCIJobTokenScopeMutation;
 
-        const response = await this.$apollo.mutate({
-          mutation,
-          variables: { projectPath: this.fullPath, targetPath: item.fullPath },
-        });
+      const response = await this.$apollo.mutate({
+        mutation,
+        variables: { projectPath: this.fullPath, targetPath: fullPath },
+      });
 
-        const error = response.data.removeNamespace.errors[0];
-        if (error) {
-          createAlert({ message: error });
-        } else {
-          this.refetchGroupsAndProjects();
-        }
-      } catch (error) {
-        createAlert({ message: error.message });
+      const error = response.data.removeNamespace.errors[0];
+      if (error) {
+        return Promise.reject(error);
       }
+
+      this.refetchGroupsAndProjects();
+      return Promise.resolve();
     },
     refetchGroupsAndProjects() {
       this.$apollo.queries.groupsAndProjectsWithAccess.refetch();
+    },
+    showNamespaceForm(namespace, showFormFn) {
+      this.namespaceToEdit = namespace;
+      showFormFn();
     },
   },
 };
@@ -244,6 +291,7 @@ export default {
         :description="$options.i18n.cardHeaderDescription"
         :toggle-text="$options.i18n.addGroupOrProject"
         class="gl-mt-5"
+        @hideForm="namespaceToEdit = null"
       >
         <template #count>
           <gl-loading-icon v-if="isAllowlistLoading" data-testid="count-loading-icon" />
@@ -266,14 +314,37 @@ export default {
         </template>
 
         <template #form="{ hideForm }">
-          <namespace-form @saved="refetchGroupsAndProjects" @close="hideForm" />
+          <namespace-form
+            :namespace="namespaceToEdit"
+            @saved="refetchGroupsAndProjects"
+            @close="hideForm"
+          />
         </template>
 
-        <token-access-table
-          :items="allowlist"
-          :loading="isAllowlistLoading"
-          @removeItem="removeItem"
-        />
+        <template #default="{ showForm }">
+          <token-access-table
+            :items="allowlist"
+            :loading="isAllowlistLoading"
+            :show-policies="isJobTokenPoliciesEnabled"
+            @editItem="showNamespaceForm($event, showForm)"
+            @removeItem="namespaceToRemove = $event"
+          />
+
+          <confirm-action-modal
+            v-if="namespaceToRemove"
+            modal-id="inbound-token-access-remove-confirm-modal"
+            :title="removeNamespaceModalTitle"
+            :action-fn="removeItem"
+            :action-text="$options.i18n.removeNamespaceModalActionText"
+            @close="namespaceToRemove = null"
+          >
+            <gl-sprintf :message="$options.i18n.removeNamespaceModalText">
+              <template #namespace>
+                <code>{{ namespaceToRemove.fullPath }}</code>
+              </template>
+            </gl-sprintf>
+          </confirm-action-modal>
+        </template>
       </crud-component>
     </template>
   </div>

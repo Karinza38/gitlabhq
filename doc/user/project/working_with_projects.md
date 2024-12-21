@@ -1,6 +1,6 @@
 ---
-stage: Data Stores
-group: Tenant Scale
+stage: Tenant Scale
+group: Organizations
 info: "To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments"
 ---
 
@@ -322,6 +322,7 @@ These features are still accessible, but not writable.
 - Issues
 - Merge requests
 - Feature flags
+- Pull mirroring
 - All other project features
 
 Active pipeline schedules of archived projects don't become read-only.
@@ -370,6 +371,8 @@ Prerequisites:
 1. To confirm, select **OK**.
 
 The deployed Pages are not restored and you must rerun the pipeline.
+
+When a project is unarchived, its pull mirroring process will automatically resume.
 
 ## View project activity
 

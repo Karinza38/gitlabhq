@@ -209,7 +209,7 @@ class ProjectPolicy < BasePolicy
 
   with_scope :subject
   condition(:model_experiments_enabled) do
-    Feature.enabled?(:ml_experiment_tracking, @subject) && @subject.feature_available?(:model_experiments, @user)
+    @subject.feature_available?(:model_experiments, @user)
   end
 
   with_scope :subject
@@ -364,6 +364,8 @@ class ProjectPolicy < BasePolicy
     enable :manage_owners
 
     enable :add_catalog_resource
+
+    enable :destroy_pipeline
   end
 
   rule { can?(:guest_access) }.policy do
@@ -397,6 +399,7 @@ class ProjectPolicy < BasePolicy
     enable :update_issue
     enable :reopen_issue
     enable :admin_issue
+    enable :admin_work_item
     enable :destroy_issue
     enable :read_confidential_issues
     enable :create_design
@@ -409,7 +412,6 @@ class ProjectPolicy < BasePolicy
     enable :create_wiki
     enable :admin_wiki
     enable :read_merge_request
-    enable :download_code
     enable :export_work_items
   end
 
@@ -438,6 +440,7 @@ class ProjectPolicy < BasePolicy
     enable :update_issue
     enable :reopen_issue
     enable :admin_issue
+    enable :admin_work_item
     enable :admin_label
     enable :admin_milestone
     enable :admin_issue_board_list
@@ -693,10 +696,14 @@ class ProjectPolicy < BasePolicy
     prevent(*create_read_update_admin_destroy(:issue_board_list))
   end
 
-  rule { merge_requests_disabled | repository_disabled | ~can?(:download_code) }.policy do
+  rule { merge_requests_disabled | repository_disabled }.policy do
     prevent :create_merge_request_in
     prevent :create_merge_request_from
     prevent(*create_read_update_admin_destroy(:merge_request))
+  end
+
+  rule { ~can?(:download_code) }.policy do
+    prevent :create_merge_request_in
   end
 
   rule { pages_disabled }.policy do

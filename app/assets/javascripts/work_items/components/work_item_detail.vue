@@ -265,6 +265,9 @@ export default {
     workItemFullPath() {
       return this.modalWorkItemFullPath || this.fullPath;
     },
+    workItemProjectId() {
+      return this.workItem?.project?.id;
+    },
     workItemLoading() {
       return isEmpty(this.workItem) && this.$apollo.queries.workItem.loading;
     },
@@ -311,7 +314,7 @@ export default {
       const { workItemType, parentWorkItem, hasSubepicsFeature } = this;
 
       if (workItemType === WORK_ITEM_TYPE_VALUE_EPIC) {
-        return hasSubepicsFeature && parentWorkItem;
+        return Boolean(hasSubepicsFeature && parentWorkItem);
       }
 
       return Boolean(parentWorkItem);
@@ -332,6 +335,9 @@ export default {
     },
     parentWorkItemConfidentiality() {
       return this.parentWorkItem?.confidential;
+    },
+    parentWorkItemType() {
+      return this.parentWorkItem?.workItemType?.name;
     },
     workItemIconName() {
       return this.workItem.workItemType?.iconName;
@@ -433,11 +439,17 @@ export default {
     iid() {
       return this.workItemIid || this.workItem.iid;
     },
+    widgets() {
+      return this.workItem.widgets;
+    },
     isItemSelected() {
       return !isEmpty(this.activeChildItem);
     },
     activeChildItemType() {
       return this.activeChildItem?.workItemType?.name;
+    },
+    activeChildItemId() {
+      return this.activeChildItem?.id;
     },
   },
   methods: {
@@ -448,7 +460,7 @@ export default {
       this.editMode = true;
     },
     isWidgetPresent(type) {
-      return this.workItem.widgets?.find((widget) => widget.type === type);
+      return this.widgets?.find((widget) => widget.type === type);
     },
     toggleConfidentiality(confidentialStatus) {
       this.updateInProgress = true;
@@ -652,6 +664,9 @@ export default {
       });
       cache.gc();
     },
+    workItemTypeChanged() {
+      this.$apollo.queries.workItem.refetch();
+    },
   },
   WORK_ITEM_TYPE_VALUE_OBJECTIVE,
   WORKSPACE_PROJECT,
@@ -674,12 +689,14 @@ export default {
       :work-item-notifications-subscribed="workItemNotificationsSubscribed"
       :work-item-author-id="workItemAuthorId"
       :is-group="isGroupWorkItem"
+      :allowed-child-types="allowedChildTypes"
       @hideStickyHeader="hideStickyHeader"
       @showStickyHeader="showStickyHeader"
       @deleteWorkItem="$emit('deleteWorkItem', { workItemType, workItemId: workItem.id })"
       @toggleWorkItemConfidentiality="toggleConfidentiality"
       @error="updateError = $event"
       @promotedToObjective="$emit('promotedToObjective', iid)"
+      @workItemTypeChanged="workItemTypeChanged"
       @toggleEditMode="enableEditMode"
       @workItemStateUpdated="$emit('workItemStateUpdated')"
       @toggleReportAbuseModal="toggleReportAbuseModal"
@@ -767,16 +784,21 @@ export default {
                 :work-item-reference="workItem.reference"
                 :work-item-create-note-email="workItem.createNoteEmail"
                 :is-modal="isModal"
+                :is-drawer="isDrawer"
                 :work-item-state="workItem.state"
                 :has-children="hasChildren"
+                :has-parent="shouldShowAncestors"
                 :work-item-author-id="workItemAuthorId"
                 :can-create-related-item="workItemLinkedItems !== undefined"
                 :is-group="isGroupWorkItem"
+                :widgets="widgets"
+                :allowed-child-types="allowedChildTypes"
                 @deleteWorkItem="$emit('deleteWorkItem', { workItemType, workItemId: workItem.id })"
                 @toggleWorkItemConfidentiality="toggleConfidentiality"
                 @error="updateError = $event"
                 @promotedToObjective="$emit('promotedToObjective', iid)"
                 @workItemStateUpdated="$emit('workItemStateUpdated')"
+                @workItemTypeChanged="workItemTypeChanged"
                 @toggleReportAbuseModal="toggleReportAbuseModal"
                 @workItemCreated="handleWorkItemCreated"
               />
@@ -843,11 +865,13 @@ export default {
                     @error="onUploadDesignError"
                   />
                   <work-item-create-branch-merge-request-split-button
-                    v-if="workItemsAlphaEnabled && workItemDevelopment"
+                    v-if="workItemDevelopment"
                     :work-item-id="workItem.id"
                     :work-item-iid="iid"
                     :work-item-full-path="workItemFullPath"
                     :work-item-type="workItem.workItemType.name"
+                    :is-confidential-work-item="workItem.confidential"
+                    :project-id="workItemProjectId"
                   />
                 </div>
               </div>
@@ -888,6 +912,7 @@ export default {
               :parent-work-item-type="workItem.workItemType.name"
               :work-item-id="workItem.id"
               :work-item-iid="iid"
+              :active-child-item-id="activeChildItemId"
               :can-update="canUpdate"
               :can-update-children="canUpdateChildren"
               :confidential="workItem.confidential"

@@ -47,7 +47,8 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
     push_frontend_feature_flag(:reviewer_assign_drawer, current_user)
     push_frontend_feature_flag(:vulnerability_code_flow, project)
     push_frontend_feature_flag(:pipeline_vulnerability_code_flow, project)
-    push_frontend_feature_flag(:mr_vulnerability_code_flow, current_user)
+    push_frontend_feature_flag(:mr_vulnerability_code_flow, project)
+    push_frontend_feature_flag(:mr_show_reports_immediately, project)
   end
 
   around_action :allow_gitaly_ref_name_caching, only: [:index, :show, :diffs, :rapid_diffs, :discussions]
@@ -113,6 +114,7 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
     return render_404 unless ::Feature.enabled?(:rapid_diffs, current_user, type: :wip)
 
     streaming_offset = 5
+    @reload_stream_url = diffs_stream_url(@merge_request)
     @stream_url = diffs_stream_url(@merge_request, streaming_offset, diff_view)
     @diffs_slice = @merge_request.first_diffs_slice(streaming_offset)
 

@@ -40,6 +40,7 @@ export default function initHeaderApp({ router, isReadmeView = false, isBlobView
       breadcrumbsCanCollaborate,
       breadcrumbsCanEditTree,
       breadcrumbsCanPushCode,
+      breadcrumbsCanPushToBranch,
       breadcrumbsSelectedBranch,
       breadcrumbsNewBranchPath,
       breadcrumbsNewTagPath,
@@ -77,7 +78,7 @@ export default function initHeaderApp({ router, isReadmeView = false, isBlobView
       gitpodUrl,
       userPreferencesGitpodPath,
       userProfileEnableGitpodPath,
-    } = convertObjectPropsToCamelCase(JSON.parse(webIdeButtonOptions));
+    } = convertObjectPropsToCamelCase(webIdeButtonOptions ? JSON.parse(webIdeButtonOptions) : {});
 
     initClientQueries({ projectPath, projectShortPath, ref, escapedRef });
 
@@ -88,6 +89,7 @@ export default function initHeaderApp({ router, isReadmeView = false, isBlobView
         canCollaborate: parseBoolean(breadcrumbsCanCollaborate),
         canEditTree: parseBoolean(breadcrumbsCanEditTree),
         canPushCode: parseBoolean(breadcrumbsCanPushCode),
+        canPushToBranch: parseBoolean(breadcrumbsCanPushToBranch),
         originalBranch: ref,
         selectedBranch: breadcrumbsSelectedBranch,
         newBranchPath: breadcrumbsNewBranchPath,

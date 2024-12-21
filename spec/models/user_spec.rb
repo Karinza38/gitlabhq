@@ -1192,6 +1192,23 @@ RSpec.describe User, feature_category: :user_profile do
         end
       end
     end
+
+    describe 'composite_identity_enforced' do
+      let(:user) { build(:user) }
+
+      it 'is valid when composite_identity_enforced is false' do
+        user.composite_identity_enforced = false
+
+        expect(user).to be_valid
+      end
+
+      it 'is invalid when composite_identity_enforced is true' do
+        user.composite_identity_enforced = true
+
+        expect(user).to be_invalid
+        expect(user.errors[:composite_identity_enforced]).to include('is not included in the list')
+      end
+    end
   end
 
   describe 'scopes' do
@@ -2061,6 +2078,33 @@ RSpec.describe User, feature_category: :user_profile do
       it 'returns stored deploy key, but not normal key' do
         expect(user.deploy_keys).to include deploy_key
         expect(user.deploy_keys).not_to include key
+      end
+    end
+  end
+
+  describe '#add_admin_note' do
+    let_it_be(:user) { create(:user) }
+    let(:note) { "Some note" }
+
+    subject(:add_admin_note) { user.add_admin_note(note) }
+
+    it 'adds the new note' do
+      add_admin_note
+
+      expect(user.note).to eq("#{note}\n")
+    end
+
+    context "when notes already exist" do
+      let(:existing_note) { "Existing note" }
+
+      before do
+        user.update!(note: existing_note)
+      end
+
+      it 'adds the new note' do
+        add_admin_note
+
+        expect(user.note).to eq("#{note}\n#{existing_note}")
       end
     end
   end
@@ -6515,14 +6559,6 @@ RSpec.describe User, feature_category: :user_profile do
       it 'returns the personal namespace' do
         expect(personal_namespace).to eq(user.namespace)
       end
-
-      context 'when organization is nil' do
-        it 'builds a new namespace using default organization' do
-          user.assign_personal_namespace(nil)
-
-          expect(user.namespace.organization).to eq(Organizations::Organization.default_organization)
-        end
-      end
     end
   end
 
@@ -8880,18 +8916,6 @@ RSpec.describe User, feature_category: :user_profile do
   describe '#has_composite_identity?' do
     it 'is false' do
       expect(build(:user).has_composite_identity?).to be false
-    end
-  end
-
-  describe '#composite_identity_enforced' do
-    it 'is false' do
-      expect(build(:user).composite_identity_enforced).to be false
-    end
-  end
-
-  describe '#composite_identity_enforced=' do
-    it 'is no-op' do
-      expect(build(:user).composite_identity_enforced).to be false
     end
   end
 

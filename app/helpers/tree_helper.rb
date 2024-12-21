@@ -115,6 +115,7 @@ module TreeHelper
     attrs = {
       selected_branch: selected_branch,
       can_push_code: can?(current_user, :push_code, @project).to_s,
+      can_push_to_branch: user_access(@project).can_push_to_branch?(@ref).to_s,
       can_collaborate: can_collaborate_with_project?(@project).to_s,
       new_blob_path: project_new_blob_path(@project, @ref),
       upload_path: project_create_blob_path(@project, @ref),
@@ -161,6 +162,35 @@ module TreeHelper
     end
 
     attrs
+  end
+
+  def compare_path(project, repository, ref)
+    return if ref.blank? || repository.root_ref == ref
+
+    project_compare_index_path(project, from: repository.root_ref, to: ref)
+  end
+
+  def vue_tree_header_app_data(project, repository, ref, pipeline)
+    archive_prefix = ref ? "#{project.path}-#{ref.tr('/', '-')}" : ''
+
+    {
+      project_id: project.id,
+      ref: ref,
+      ref_type: @ref_type.to_s,
+      breadcrumbs: breadcrumb_data_attributes,
+      project_root_path: project_path(project),
+      project_path: project.full_path,
+      compare_path: compare_path(project, repository, ref),
+      web_ide_button_options: web_ide_button_data({ blob: nil }).merge(fork_modal_options(project, nil)).to_json,
+      web_ide_button_default_branch: project.default_branch_or_main,
+      ssh_url: ssh_enabled? ? ssh_clone_url_to_repo(project) : '',
+      http_url: http_enabled? ? http_clone_url_to_repo(project) : '',
+      xcode_url: show_xcode_link?(project) ? xcode_uri_to_repo(project) : '',
+      download_links: !project.empty_repo? ? download_links(project, ref, archive_prefix).to_json : '',
+      download_artifacts: pipeline &&
+        (previous_artifacts(project, ref, pipeline.latest_builds_with_artifacts).to_json || []),
+      escaped_ref: ActionDispatch::Journey::Router::Utils.escape_path(ref)
+    }
   end
 
   def vue_file_list_data(project, ref)

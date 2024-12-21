@@ -2,7 +2,7 @@ import { GlAlert, GlLoadingIcon, GlFormRadioGroup } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 import InboundTokenAccess from '~/token_access/components/inbound_token_access.vue';
@@ -12,7 +12,12 @@ import inboundRemoveProjectCIJobTokenScopeMutation from '~/token_access/graphql/
 import inboundUpdateCIJobTokenScopeMutation from '~/token_access/graphql/mutations/inbound_update_ci_job_token_scope.mutation.graphql';
 import inboundGetCIJobTokenScopeQuery from '~/token_access/graphql/queries/inbound_get_ci_job_token_scope.query.graphql';
 import inboundGetGroupsAndProjectsWithCIJobTokenScopeQuery from '~/token_access/graphql/queries/inbound_get_groups_and_projects_with_ci_job_token_scope.query.graphql';
+import getCiJobTokenScopeAllowlistQuery from '~/token_access/graphql/queries/get_ci_job_token_scope_allowlist.query.graphql';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
+import ConfirmActionModal from '~/vue_shared/components/confirm_action_modal.vue';
+import TokenAccessTable from '~/token_access/components/token_access_table.vue';
+import CrudComponent from '~/vue_shared/components/crud_component.vue';
+import { stubComponent } from 'helpers/stub_component';
 import {
   inboundJobTokenScopeEnabledResponse,
   inboundJobTokenScopeDisabledResponse,
@@ -55,8 +60,6 @@ describe('TokenAccess component', () => {
 
   const findRadioGroup = () => wrapper.findComponent(GlFormRadioGroup);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
-  const findRemoveProjectBtnAt = (i) =>
-    wrapper.findAllByRole('button', { name: 'Remove access' }).at(i);
   const findToggleFormBtn = () => wrapper.findByTestId('crud-form-toggle');
   const findTokenDisabledAlert = () => wrapper.findComponent(GlAlert);
   const findNamespaceForm = () => wrapper.findComponent(NamespaceForm);
@@ -64,22 +67,29 @@ describe('TokenAccess component', () => {
   const findCountLoadingIcon = () => wrapper.findByTestId('count-loading-icon');
   const findGroupCount = () => wrapper.findByTestId('group-count');
   const findProjectCount = () => wrapper.findByTestId('project-count');
+  const findConfirmActionModal = () => wrapper.findComponent(ConfirmActionModal);
+  const findTokenAccessTable = () => wrapper.findComponent(TokenAccessTable);
 
-  const createComponent = (requestHandlers, mountFn = shallowMountExtended, provide = {}) => {
-    wrapper = mountFn(InboundTokenAccess, {
+  const createComponent = (
+    requestHandlers,
+    { addPoliciesToCiJobToken = false, enforceAllowlist = false, stubs = {} } = {},
+  ) => {
+    wrapper = shallowMountExtended(InboundTokenAccess, {
       provide: {
         fullPath: projectPath,
-        enforceAllowlist: false,
-        ...provide,
+        enforceAllowlist,
+        glFeatures: { addPoliciesToCiJobToken },
       },
       apolloProvider: createMockApollo(requestHandlers),
       mocks: {
-        $toast: {
-          show: mockToastShow,
-        },
+        $toast: { show: mockToastShow },
       },
       directives: {
         GlTooltip: createMockDirective('gl-tooltip'),
+      },
+      stubs: {
+        CrudComponent: stubComponent(CrudComponent),
+        ...stubs,
       },
     });
 
@@ -307,7 +317,7 @@ describe('TokenAccess component', () => {
             inboundGroupsAndProjectsWithScopeResponseHandler,
           ],
         ],
-        mountExtended,
+        { stubs: { CrudComponent } },
       ),
     );
 
@@ -340,46 +350,44 @@ describe('TokenAccess component', () => {
   });
 
   describe.each`
-    type         | index | mutation                                       | handler
-    ${'group'}   | ${0}  | ${inboundRemoveGroupCIJobTokenScopeMutation}   | ${inboundRemoveGroupSuccessHandler}
-    ${'project'} | ${1}  | ${inboundRemoveProjectCIJobTokenScopeMutation} | ${inboundRemoveProjectSuccessHandler}
-  `('remove $type', ({ type, index, mutation, handler }) => {
-    it(`calls remove ${type} mutation`, async () => {
-      await createComponent(
-        [
-          [inboundGetCIJobTokenScopeQuery, inboundJobTokenScopeEnabledResponseHandler],
-          [
-            inboundGetGroupsAndProjectsWithCIJobTokenScopeQuery,
-            inboundGroupsAndProjectsWithScopeResponseHandler,
-          ],
-          [mutation, handler],
-        ],
-        mountExtended,
-      );
+    type         | mutation                                       | handler
+    ${'Group'}   | ${inboundRemoveGroupCIJobTokenScopeMutation}   | ${inboundRemoveGroupSuccessHandler}
+    ${'Project'} | ${inboundRemoveProjectCIJobTokenScopeMutation} | ${inboundRemoveProjectSuccessHandler}
+  `('remove $type', ({ type, mutation, handler }) => {
+    describe('when remove button is clicked', () => {
+      beforeEach(async () => {
+        await createComponent([[mutation, handler]]);
 
-      findRemoveProjectBtnAt(index).trigger('click');
+        findTokenAccessTable().vm.$emit('removeItem', { fullPath: 'full/path' });
+      });
 
-      expect(handler).toHaveBeenCalledWith({ projectPath, targetPath: expect.any(String) });
+      it('shows remove confirmation modal', () => {
+        expect(findConfirmActionModal().props()).toMatchObject({
+          title: `Remove full/path`,
+          actionFn: wrapper.vm.removeItem,
+          actionText: 'Remove group or project',
+        });
+      });
+
+      describe('after confirmation modal closes', () => {
+        beforeEach(() => findConfirmActionModal().vm.$emit('close'));
+
+        it('hides remove confirmation modal', () => {
+          expect(findConfirmActionModal().exists()).toBe(false);
+        });
+      });
     });
 
-    it(`remove ${type} handles error correctly`, async () => {
-      await createComponent(
-        [
-          [inboundGetCIJobTokenScopeQuery, inboundJobTokenScopeEnabledResponseHandler],
-          [
-            inboundGetGroupsAndProjectsWithCIJobTokenScopeQuery,
-            inboundGroupsAndProjectsWithScopeResponseHandler,
-          ],
-          [mutation, failureHandler],
-        ],
-        mountExtended,
-      );
+    describe('when there is a mutation error', () => {
+      beforeEach(async () => {
+        await createComponent([[mutation, failureHandler]]);
 
-      findRemoveProjectBtnAt(index).trigger('click');
+        findTokenAccessTable().vm.$emit('removeItem', { fullPath: 'full/path', __typename: type });
+      });
 
-      await waitForPromises();
-
-      expect(createAlert).toHaveBeenCalledWith({ message });
+      it('returns an error', async () => {
+        await expect(wrapper.vm.removeItem()).rejects.toThrow(error);
+      });
     });
   });
 
@@ -392,9 +400,8 @@ describe('TokenAccess component', () => {
           inboundGroupsAndProjectsWithScopeResponseHandler,
         ],
       ];
-      const provide = { enforceAllowlist: true };
 
-      return createComponent(requestHandlers, shallowMountExtended, provide);
+      return createComponent(requestHandlers, { enforceAllowlist: true });
     });
 
     it('hides alert, options, and submit button', () => {
@@ -413,7 +420,7 @@ describe('TokenAccess component', () => {
         ],
       ];
 
-      return createComponent(requestHandlers, mountExtended);
+      return createComponent(requestHandlers, { stubs: { CrudComponent } });
     });
 
     describe('when allowlist query is loaded', () => {
@@ -459,6 +466,59 @@ describe('TokenAccess component', () => {
 
       it('does not show project count', () => {
         expect(findProjectCount().exists()).toBe(false);
+      });
+    });
+  });
+
+  describe.each`
+    addPoliciesToCiJobToken | oldQueryCallCount | newQueryCallCount
+    ${true}                 | ${0}              | ${1}
+    ${false}                | ${1}              | ${0}
+  `(
+    'when addPoliciesToCiJobToken feature flag is $addPoliciesToCiJobToken',
+    ({ addPoliciesToCiJobToken, oldQueryCallCount, newQueryCallCount }) => {
+      const oldQueryHandler = jest.fn();
+      const newQueryHandler = jest.fn();
+
+      beforeEach(() => {
+        createComponent(
+          [
+            [inboundGetGroupsAndProjectsWithCIJobTokenScopeQuery, oldQueryHandler],
+            [getCiJobTokenScopeAllowlistQuery, newQueryHandler],
+          ],
+          { addPoliciesToCiJobToken },
+        );
+      });
+
+      it(`calls the old query ${oldQueryCallCount} times`, () => {
+        expect(oldQueryHandler).toHaveBeenCalledTimes(oldQueryCallCount);
+      });
+
+      it(`calls the new query ${newQueryCallCount} times`, () => {
+        expect(newQueryHandler).toHaveBeenCalledTimes(newQueryCallCount);
+      });
+    },
+  );
+
+  describe('editing an allowlist item', () => {
+    const item = {};
+
+    beforeEach(async () => {
+      await createComponent([], { stubs: { CrudComponent } });
+      findTokenAccessTable().vm.$emit('editItem', item);
+    });
+
+    it('shows the form with the namespace', () => {
+      expect(findNamespaceForm().props('namespace')).toBe(item);
+    });
+
+    describe('when form is closed', () => {
+      beforeEach(() => findNamespaceForm().vm.$emit('close'));
+
+      it('clears the selected namespace', async () => {
+        await findToggleFormBtn().vm.$emit('click');
+
+        expect(findNamespaceForm().props('namespace')).toBe(null);
       });
     });
   });

@@ -62,8 +62,6 @@ RSpec.shared_examples 'cloneable and moveable work item' do
 end
 
 RSpec.shared_examples 'cloneable and moveable widget data' do
-  using RSpec::Parameterized::TableSyntax
-
   def work_item_assignees(work_item)
     work_item.reload.assignees
   end
@@ -94,6 +92,10 @@ RSpec.shared_examples 'cloneable and moveable widget data' do
 
   def work_item_crm_contacts(work_item)
     work_item.reload.customer_relations_contacts
+  end
+
+  def work_item_labels(work_item)
+    work_item.reload.labels.pluck(:title)
   end
 
   let_it_be(:users) { create_list(:user, 3) }
@@ -175,79 +177,75 @@ RSpec.shared_examples 'cloneable and moveable widget data' do
     timelogs.pluck(:user_id, :time_spent)
   end
 
-  where(:widget_name, :eval_value, :expected_data, :operations) do
-    :assignees                   | :work_item_assignees          | ref(:assignees)      | [ref(:move), ref(:clone)]
-    :award_emoji                 | :work_item_award_emoji        | ref(:award_emojis)   | [ref(:move)]
-    :email_participants          | :work_item_emails             | ref(:emails)         | [ref(:move)]
-    :milestone                   | :work_item_milestone          | ref(:milestone)      | [ref(:move), ref(:clone)]
-    :subscriptions               | :work_item_subscriptions      | ref(:subscriptions)  | [ref(:move)]
-    :sent_notifications          | :work_item_sent_notifications | ref(:notifications)  | [ref(:move)]
-    :timelogs                    | :work_item_timelogs           | ref(:timelogs)       | [ref(:move)]
-    :customer_relations_contacts | :work_item_crm_contacts       | ref(:crm_contacts)   | [ref(:move), ref(:clone)]
+  let_it_be(:labels) do
+    labels = []
+    if original_work_item.namespace.is_a?(Group)
+      labels = create_list(:group_label, 2, group: original_work_item.namespace)
+      create(:group_label, group: target_namespace, title: labels.first.name)
+    else
+      labels = create_list(:label, 2, project: original_work_item.project)
+      create(:label, project: target_namespace.project, title: labels.first.name)
+    end
+
+    original_work_item.update!(labels: labels)
+    [labels.first.title]
   end
 
-  with_them do
-    context "with widget" do
-      before do
-        allow(original_work_item).to receive(:from_service_desk?).and_return(true)
-        allow(WorkItems::CopyTimelogsWorker).to receive(:perform_async) do |*args|
-          WorkItems::CopyTimelogsWorker.perform_inline(*args)
-        end
-      end
+  let_it_be(:move) { WorkItems::DataSync::MoveService }
+  let_it_be(:clone) { WorkItems::DataSync::CloneService }
 
-      it_behaves_like 'for clone and move services'
-    end
+  # rubocop: disable Layout/LineLength -- improved readability with one line per widget
+  let_it_be(:widgets) do
+    [
+      { widget_name: :assignees,                   eval_value: :work_item_assignees,          expected_data: assignees,     operations: [move, clone] },
+      { widget_name: :award_emoji,                 eval_value: :work_item_award_emoji,        expected_data: award_emojis,  operations: [move] },
+      { widget_name: :email_participants,          eval_value: :work_item_emails,             expected_data: emails,        operations: [move] },
+      { widget_name: :milestone,                   eval_value: :work_item_milestone,          expected_data: milestone,     operations: [move, clone] },
+      { widget_name: :subscriptions,               eval_value: :work_item_subscriptions,      expected_data: subscriptions, operations: [move] },
+      { widget_name: :sent_notifications,          eval_value: :work_item_sent_notifications, expected_data: notifications, operations: [move] },
+      { widget_name: :timelogs,                    eval_value: :work_item_timelogs,           expected_data: timelogs,      operations: [move] },
+      { widget_name: :customer_relations_contacts, eval_value: :work_item_crm_contacts,       expected_data: crm_contacts,  operations: [move, clone] },
+      { widget_name: :labels,                      eval_value: :work_item_labels,             expected_data: labels,        operations: [move, clone] }
+    ]
   end
+  # rubocop: enable Layout/LineLength
 
-  RSpec.shared_examples 'cloneable and moveable for ee widget data' do
-    using RSpec::Parameterized::TableSyntax
-
-    def work_item_weights_source(work_item)
-      work_item.reload.weights_source&.slice(:rolled_up_weight, :rolled_up_completed_weight)
-    end
-
-    let_it_be(:weights_source) do
-      weights_source = create(:work_item_weights_source, work_item: original_work_item, rolled_up_weight: 20,
-        rolled_up_completed_weight: 50)
-      weights_source&.slice(:rolled_up_weight, :rolled_up_completed_weight)
-    end
-
-    where(:widget_name, :eval_value, :expected_data, :operations) do
-      :weights_source | :work_item_weights_source | ref(:weights_source) | [ref(:move), ref(:clone)]
-    end
-
-    with_them do
-      context "with widget" do
-        it_behaves_like 'for clone and move services'
+  context "with widget" do
+    before do
+      allow(original_work_item).to receive(:from_service_desk?).and_return(true)
+      allow(WorkItems::CopyTimelogsWorker).to receive(:perform_async) do |*args|
+        WorkItems::CopyTimelogsWorker.perform_inline(*args)
       end
     end
+
+    it_behaves_like 'for clone and move services'
   end
 end
 
-# this shared context is only to be used for sharing the code beetween the shared examples for cloneable and movable
+# this shared example is only to be used for sharing the code between the shared examples for cloneable and movable
 # widget data (and for EE widget data)
-RSpec.shared_context 'for clone and move services' do
-  let(:move) { WorkItems::DataSync::MoveService }
-  let(:clone) { WorkItems::DataSync::CloneService }
-
-  it 'clones and moves the data', :aggregate_failures do
+RSpec.shared_examples 'for clone and move services' do
+  it 'clones and moves the data', :aggregate_failures, :sidekiq_inline do
     new_work_item = service.execute[:work_item]
-    widget_value = send(eval_value, new_work_item)
 
-    if operations.include?(described_class)
-      expect(widget_value).not_to be_blank
-      # trick to compare single values and arrays with a single statement
-      expect([widget_value].flatten).to match_array([expected_data].flatten)
-    else
-      expect(widget_value).to be_blank
-    end
+    widgets.each do |widget|
+      widget_value = send(widget[:eval_value], new_work_item)
 
-    cleanup_data = Feature.enabled?(:cleanup_data_source_work_item_data, original_work_item.resource_parent)
-    if cleanup_data && described_class == move
-      expect(original_work_item.reload.public_send(widget_name)).to be_blank
-    elsif widget_name != :sent_notifications
-      # sent notifications are moved from original work item to new work item rather than deleted afterwards.
-      expect(original_work_item.reload.public_send(widget_name)).not_to be_blank
+      if widget[:operations].include?(described_class)
+        expect(widget_value).not_to be_blank
+        # trick to compare single values and arrays with a single statement
+        expect([widget_value].flatten).to match_array([widget[:expected_data]].flatten)
+      else
+        expect(widget_value).to be_blank
+      end
+
+      cleanup_data = Feature.enabled?(:cleanup_data_source_work_item_data, original_work_item.resource_parent)
+      if cleanup_data && described_class == move
+        expect(original_work_item.reload.public_send(widget[:widget_name])).to be_blank
+      elsif widget[:widget_name] != :sent_notifications
+        # sent notifications are moved from original work item to new work item rather than deleted afterwards.
+        expect(original_work_item.reload.public_send(widget[:widget_name])).not_to be_blank
+      end
     end
   end
 end

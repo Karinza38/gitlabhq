@@ -124,10 +124,10 @@ RSpec.describe 'Database schema',
       group_type_ci_runners_e59bb2812d: %w[creator_id sharding_key_id], # No need for LFKs on partition, already handled on ci_runners_e59bb2812d routing table.
       project_type_ci_runners_e59bb2812d: %w[creator_id sharding_key_id], # No need for LFKs on partition, already handled on ci_runners_e59bb2812d routing table.
       ci_runner_machines: %w[sharding_key_id], # This value is meant to populate the partitioned table, no other usage
-      ci_runner_machines_687967fa8a: %w[runner_id sharding_key_id], # This field is only used in the partitions, and has the appropriate FKs. runner_id temporarily ignored due to incident 18792
-      instance_type_ci_runner_machines_687967fa8a: %w[runner_id sharding_key_id], # This field is always NULL in this partition. runner_id temporarily ignored due to incident 18792
-      group_type_ci_runner_machines_687967fa8a: %w[runner_id sharding_key_id], # No need for LFK, rows will be deleted by the FK to ci_runners. runner_id temporarily ignored due to incident 18792
-      project_type_ci_runner_machines_687967fa8a: %w[runner_id sharding_key_id], # No need for LFK, rows will be deleted by the FK to ci_runners. runner_id temporarily ignored due to incident 18792
+      ci_runner_machines_687967fa8a: %w[runner_id sharding_key_id], # The sharding_key_id field is only used in the partitions, and has the appropriate FKs. The runner_id field will be removed with https://gitlab.com/gitlab-org/gitlab/-/issues/503749.
+      instance_type_ci_runner_machines_687967fa8a: %w[sharding_key_id], # This field is always NULL in this partition.
+      group_type_ci_runner_machines_687967fa8a: %w[sharding_key_id], # No need for LFK, rows will be deleted by the FK to ci_runners.
+      project_type_ci_runner_machines_687967fa8a: %w[sharding_key_id], # No need for LFK, rows will be deleted by the FK to ci_runners.
       ci_runner_projects: %w[runner_id],
       ci_sources_pipelines: %w[partition_id source_partition_id source_job_id],
       ci_sources_projects: %w[partition_id],
@@ -188,6 +188,7 @@ RSpec.describe 'Database schema',
       p_ci_builds: %w[erased_by_id trigger_request_id partition_id auto_canceled_by_partition_id execution_config_id
         upstream_pipeline_partition_id],
       p_ci_builds_metadata: %w[project_id build_id partition_id],
+      p_ci_build_trace_metadata: %w[project_id],
       p_batched_git_ref_updates_deletions: %w[project_id partition_id],
       p_catalog_resource_sync_events: %w[catalog_resource_id project_id partition_id],
       p_catalog_resource_component_usages: %w[used_by_project_id], # No FK constraint because we want to preserve historical usage data
@@ -232,6 +233,7 @@ RSpec.describe 'Database schema',
       # See: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/87584
       # Fixes performance issues with the deletion of web-hooks with many log entries
       web_hook_logs: %w[web_hook_id],
+      web_hook_logs_daily: %w[web_hook_id],
       webauthn_registrations: %w[u2f_registration_id], # this column will be dropped
       ml_candidates: %w[internal_id],
       value_stream_dashboard_counts: %w[namespace_id],

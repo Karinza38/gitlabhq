@@ -14,7 +14,7 @@ info: "To determine the technical writer assigned to the Stage/Group associated 
   edit `tooling/custom_roles/docs/templates/custom_abilities.md.erb`.
 -->
 
-# Available custom permissions
+# Custom permissions
 
 The following permissions are available. You can add these permissions in any combination
 to a base role to create a custom role.
@@ -40,6 +40,7 @@ These requirements are documented in the `Required permission` column in the fol
 | Name | Required permission | Description | Introduced in | Feature flag | Enabled in |
 |:-----|:------------|:------------------|:---------|:--------------|:---------|
 | [`admin_compliance_framework`](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/144183) |  | Create, read, update, and delete compliance frameworks. Users with this permission can also assign a compliance framework label to a project, and set the default framework of a group. | GitLab [17.0](https://gitlab.com/gitlab-org/gitlab/-/issues/411502) |  |  |
+| [`read_compliance_dashboard`](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/175066) |  | Read compliance capabilities including adherence, violations, and frameworks for groups and projects. | GitLab [17.7](https://gitlab.com/gitlab-org/gitlab/-/issues/465324) |  |  |
 
 ## Continuous delivery
 
@@ -93,7 +94,7 @@ These requirements are documented in the `Required permission` column in the fol
 |:-----|:------------|:------------------|:---------|:--------------|:---------|
 | [`admin_merge_request`](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/128302) |  | Allows approval of merge requests. | GitLab [16.4](https://gitlab.com/gitlab-org/gitlab/-/issues/412708) |  |  |
 | [`admin_protected_branch`](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/162208) |  | Create, read, update, and delete protected branches for a project. | GitLab [17.4](https://gitlab.com/gitlab-org/gitlab/-/issues/448823) |  |  |
-| [`admin_push_rules`](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/147872) |  | Configure push rules for repositories at the group or project level. | GitLab [16.11](https://gitlab.com/gitlab-org/gitlab/-/issues/421786) | `custom_ability_admin_push_rules` |  |
+| [`admin_push_rules`](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/147872) |  | Configure push rules for repositories at the group or project level. | GitLab [16.11](https://gitlab.com/gitlab-org/gitlab/-/issues/421786) |  |  |
 | [`read_code`](https://gitlab.com/gitlab-org/gitlab/-/issues/376180) |  | Allows read-only access to the source code in the user interface. Does not allow users to edit or download repository archives, clone or pull repositories, view source code in an IDE, or view merge requests for private projects. You can download individual files because read-only access inherently grants the ability to make a local copy of the file. | GitLab [15.7](https://gitlab.com/gitlab-org/gitlab/-/issues/20277) | `customizable_roles` | GitLab [15.9](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/110810) |
 
 ## System access

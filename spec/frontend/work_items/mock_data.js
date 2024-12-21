@@ -1,3 +1,4 @@
+import { map } from 'lodash';
 import { EMOJI_THUMBS_UP, EMOJI_THUMBS_DOWN } from '~/emoji/constants';
 import { WIDGET_TYPE_LINKED_ITEMS, NEW_WORK_ITEM_IID, STATE_CLOSED } from '~/work_items/constants';
 
@@ -188,6 +189,10 @@ export const workItemQueryResponse = {
         webPath: '/root',
         __typename: 'UserCore',
       },
+      project: {
+        id: 'gid://gitlab/Project/7',
+        __typename: 'Project',
+      },
       namespace: {
         __typename: 'Project',
         id: '1',
@@ -304,6 +309,10 @@ export const updateWorkItemMutationResponse = {
         closedAt: null,
         author: {
           ...mockAssignees[0],
+        },
+        project: {
+          id: 'gid://gitlab/Project/7',
+          __typename: 'Project',
         },
         namespace: {
           __typename: 'Project',
@@ -435,6 +444,10 @@ export const convertWorkItemMutationResponse = {
         closedAt: null,
         author: {
           ...mockAssignees[0],
+        },
+        project: {
+          id: 'gid://gitlab/Project/7',
+          __typename: 'Project',
         },
         namespace: {
           __typename: 'Project',
@@ -926,6 +939,7 @@ export const workItemBlockedByLinkedItemsResponse = {
 
 export const workItemDevelopmentMRNodes = [
   {
+    id: 'gid://gitlab/MergeRequestsClosingIssues/61',
     fromMrDescription: true,
     mergeRequest: {
       iid: '13',
@@ -965,13 +979,14 @@ export const workItemDevelopmentMRNodes = [
     __typename: 'WorkItemClosingMergeRequest',
   },
   {
+    id: 'gid://gitlab/MergeRequestsClosingIssues/62',
     fromMrDescription: true,
     mergeRequest: {
       iid: '15',
       id: 'gid://gitlab/MergeRequest/123',
       title: 'got immutability working end to end.  Scope for some cleanup/optimization',
       webUrl: 'http://127.0.0.1:3000/flightjs/Flight/-/merge_requests/15',
-      state: 'opened',
+      state: 'merged',
       sourceBranch: '13-branch',
       reference: '!11',
       headPipeline: null,
@@ -994,13 +1009,14 @@ export const workItemDevelopmentMRNodes = [
     __typename: 'WorkItemClosingMergeRequest',
   },
   {
+    id: 'gid://gitlab/MergeRequestsClosingIssues/63',
     fromMrDescription: true,
     mergeRequest: {
       iid: '14',
       id: 'gid://gitlab/MergeRequest/122',
       title: "Draft: Always call registry's trigger method from withRegistration",
       webUrl: 'http://127.0.0.1:3000/flightjs/Flight/-/merge_requests/14',
-      state: 'opened',
+      state: 'closed',
       sourceBranch: '13-branch',
       reference: '!11',
       headPipeline: null,
@@ -1023,6 +1039,7 @@ export const workItemDevelopmentMRNodes = [
     __typename: 'WorkItemClosingMergeRequest',
   },
   {
+    id: 'gid://gitlab/MergeRequestsClosingIssues/64',
     fromMrDescription: true,
     mergeRequest: {
       iid: '12',
@@ -1062,6 +1079,7 @@ export const workItemDevelopmentMRNodes = [
     __typename: 'WorkItemClosingMergeRequest',
   },
   {
+    id: 'gid://gitlab/MergeRequestsClosingIssues/65',
     fromMrDescription: true,
     mergeRequest: {
       iid: '11',
@@ -1174,10 +1192,15 @@ export const workItemDevelopmentFragmentResponse = ({
   willAutoCloseByMergeRequest = false,
   featureFlagNodes = workItemDevelopmentFeatureFlagNodes,
   branchNodes = workItemRelatedBranchNodes,
+  relatedMergeRequests = map(workItemDevelopmentMRNodes, 'mergeRequest'),
 } = {}) => {
   return {
     type: 'DEVELOPMENT',
     willAutoCloseByMergeRequest,
+    relatedMergeRequests: {
+      nodes: relatedMergeRequests,
+      __typename: 'MergeRequestConnection',
+    },
     featureFlags: {
       nodes: featureFlagNodes,
       __typename: 'FeatureFlagConnection',
@@ -1193,6 +1216,53 @@ export const workItemDevelopmentFragmentResponse = ({
     __typename: 'WorkItemWidgetDevelopment',
   };
 };
+
+export const workItemDevelopmentResponse = ({
+  iid = '1',
+  id = 'gid://gitlab/WorkItem/1',
+  developmentItems,
+} = {}) => ({
+  data: {
+    workItem: {
+      __typename: 'WorkItem',
+      id,
+      iid,
+      namespace: {
+        __typename: 'Project',
+        id: '1',
+      },
+      widgets: [
+        {
+          __typename: 'WorkItemWidgetIteration',
+        },
+        {
+          __typename: 'WorkItemWidgetWeight',
+        },
+        {
+          __typename: 'WorkItemWidgetAssignees',
+        },
+        {
+          __typename: 'WorkItemWidgetLabels',
+        },
+        {
+          __typename: 'WorkItemWidgetDescription',
+        },
+        {
+          __typename: 'WorkItemWidgetHierarchy',
+        },
+        {
+          __typename: 'WorkItemWidgetStartAndDueDate',
+        },
+        {
+          __typename: 'WorkItemWidgetMilestone',
+        },
+        {
+          ...developmentItems,
+        },
+      ],
+    },
+  },
+});
 
 export const workItemResponseFactory = ({
   iid = '1',
@@ -1219,7 +1289,6 @@ export const workItemResponseFactory = ({
   healthStatusWidgetPresent = true,
   notesWidgetPresent = true,
   designWidgetPresent = true,
-  developmentWidgetPresent = true,
   confidential = false,
   discussionLocked = false,
   canInviteMembers = false,
@@ -1244,7 +1313,6 @@ export const workItemResponseFactory = ({
   awardEmoji = mockAwardsWidget,
   state = 'OPEN',
   linkedItems = mockEmptyLinkedItems,
-  developmentItems = workItemDevelopmentFragmentResponse(),
   color = '#1068bf',
   editableWeightWidget = true,
   hasParent = false,
@@ -1255,6 +1323,7 @@ export const workItemResponseFactory = ({
   rolledUpCompletedWeight = 0,
   descriptionText = 'some **great** text',
   descriptionHtml = '<p data-sourcepos="1:1-1:19" dir="auto">some <strong>great</strong> text</p>',
+  developmentWidgetPresent = false,
 } = {}) => ({
   data: {
     workItem: {
@@ -1271,6 +1340,10 @@ export const workItemResponseFactory = ({
       updatedAt,
       closedAt: null,
       author,
+      project: {
+        id: 'gid://gitlab/Project/7',
+        __typename: 'Project',
+      },
       namespace: {
         __typename: 'Project',
         id: '1',
@@ -1554,13 +1627,6 @@ export const workItemResponseFactory = ({
               type: 'DESIGNS',
             }
           : { type: 'MOCK TYPE' },
-        developmentWidgetPresent
-          ? {
-              ...developmentItems,
-            }
-          : {
-              type: 'MOCK TYPE',
-            },
         crmContactsWidgetPresent
           ? {
               __typename: 'WorkItemWidgetCrmContacts',
@@ -1577,6 +1643,12 @@ export const workItemResponseFactory = ({
           ? {
               __typename: 'WorkItemWidgetEmailParticipants',
               type: 'EMAIL_PARTICIPANTS',
+            }
+          : { type: 'MOCK TYPE' },
+        developmentWidgetPresent
+          ? {
+              type: 'DEVELOPMENT',
+              __typename: 'WorkItemWidgetDevelopment',
             }
           : { type: 'MOCK TYPE' },
       ],
@@ -1634,6 +1706,10 @@ export const createWorkItemMutationResponse = {
         webUrl: 'http://gdk.test/gitlab-org/gitlab/-/issues/1',
         author: {
           ...mockAssignees[0],
+        },
+        project: {
+          id: 'gid://gitlab/Project/7',
+          __typename: 'Project',
         },
         namespace: {
           __typename: 'Project',
@@ -1833,6 +1909,72 @@ export const workItemObjectiveMetadataWidgets = {
     hasChildren: false,
     rolledUpCountsByType: [],
     __typename: 'WorkItemWidgetHierarchy',
+  },
+};
+
+export const workItemChangeTypeWidgets = {
+  MILESTONE: {
+    type: 'MILESTONE',
+    __typename: 'WorkItemWidgetMilestone',
+    milestone: mockMilestone,
+  },
+  ITERATION: {
+    type: 'ITERATION',
+    iteration: {
+      id: 'gid://gitlab/Iteration/86312',
+      __typename: 'Iteration',
+    },
+    __typename: 'WorkItemWidgetIteration',
+  },
+  DEVELOPMENT: {
+    type: 'DEVELOPMENT',
+    relatedBranches: {
+      nodes: [
+        {
+          id: '1',
+        },
+      ],
+      __typename: 'WorkItemRelatedBranchConnection',
+    },
+  },
+  WEIGHT: {
+    type: 'WEIGHT',
+    weight: 1,
+    __typename: 'WorkItemWidgetWeight',
+  },
+  CRM_CONTACTS: {
+    type: 'CRM_CONTACTS',
+    contacts: {
+      nodes: [
+        {
+          id: 'gid://gitlab/CustomerRelations::Contact/50',
+          __typename: 'CustomerRelationsContact',
+        },
+      ],
+      __typename: 'CustomerRelationsContactConnection',
+    },
+    __typename: 'WorkItemWidgetCrmContacts',
+  },
+  TIME_TRACKING: {
+    type: 'TIME_TRACKING',
+    timeEstimate: 10,
+    timelogs: {
+      nodes: [
+        {
+          __typename: 'WorkItemTimelog',
+          id: 'gid://gitlab/Timelog/2',
+        },
+      ],
+      __typename: 'WorkItemTimelogConnection',
+    },
+    totalTimeSpent: 10800,
+    __typename: 'WorkItemWidgetTimeTracking',
+  },
+  PROGRESS: {
+    type: 'PROGRESS',
+    progress: 33,
+    updatedAt: '2024-12-05T16:24:56Z',
+    __typename: 'WorkItemWidgetProgress',
   },
 };
 
@@ -2844,6 +2986,10 @@ export const changeWorkItemParentMutationResponse = {
         closedAt: null,
         author: {
           ...mockAssignees[0],
+        },
+        project: {
+          id: 'gid://gitlab/Project/7',
+          __typename: 'Project',
         },
         namespace: {
           __typename: 'Project',
@@ -4061,10 +4207,14 @@ export const mockMoreWorkItemNotesResponse = {
   },
 };
 
-export const createWorkItemNoteResponse = {
+export const createWorkItemNoteResponse = ({
+  errors = [],
+  errorMessages = null,
+  messages = null,
+} = {}) => ({
   data: {
     createNote: {
-      errors: [],
+      errors,
       note: {
         id: 'gid://gitlab/Note/569',
         discussion: {
@@ -4126,10 +4276,14 @@ export const createWorkItemNoteResponse = {
         bodyHtml: '<p data-sourcepos="1:1-1:9" dir="auto">Latest 22</p>',
         __typename: 'Note',
       },
+      quickActionsStatus: {
+        errorMessages,
+        messages,
+      },
       __typename: 'CreateNotePayload',
     },
   },
-};
+});
 
 export const mockWorkItemCommentNote = {
   id: 'gid://gitlab/Note/158',
@@ -5261,6 +5415,7 @@ export const createWorkItemQueryResponse = {
         webUrl: 'http://127.0.0.1:3000/groups/gitlab-org/-/work_items/new',
         reference: 'gitlab-org#56',
         createNoteEmail: null,
+        project: null,
         namespace: {
           id: 'full-path-epic-id',
           fullPath: 'full-path',
@@ -5357,7 +5512,7 @@ export const createWorkItemQueryResponse = {
           },
           {
             type: 'HEALTH_STATUS',
-            healthStatus: 'needsAttention',
+            healthStatus: null,
             rolledUpHealthStatus: [],
             __typename: 'WorkItemWidgetHealthStatus',
           },
@@ -5402,7 +5557,7 @@ export const createWorkItemQueryResponse = {
           },
           {
             type: 'COLOR',
-            color: '#b7a0fd',
+            color: '#1068bf', // default color in production
             textColor: '#1F1E24',
             __typename: 'WorkItemWidgetColor',
           },

@@ -24,6 +24,8 @@ RSpec.describe 'Work item detail', :js, feature_category: :team_planning do
   let(:work_items_path) { project_work_item_path(project, work_item.iid) }
 
   context 'for signed in user' do
+    let(:linked_item) { task }
+
     before_all do
       group.add_developer(user)
     end
@@ -46,6 +48,7 @@ RSpec.describe 'Work item detail', :js, feature_category: :team_planning do
     it_behaves_like 'work items title'
     it_behaves_like 'work items description'
     it_behaves_like 'work items award emoji'
+    it_behaves_like 'work items linked items'
     it_behaves_like 'work items comments', :issue
     it_behaves_like 'work items toggle status button'
 
@@ -72,6 +75,7 @@ RSpec.describe 'Work item detail', :js, feature_category: :team_planning do
     end
 
     it_behaves_like 'work items parent', :issue
+    it_behaves_like 'work items change type', 'Issue', '[data-testid="issue-type-issue-icon"]'
   end
 
   context 'for signed in owner' do
@@ -103,6 +107,7 @@ RSpec.describe 'Work item detail', :js, feature_category: :team_planning do
   context 'for user not signed in' do
     before do
       visit work_items_path
+      wait_for_all_requests
     end
 
     it 'todos action is not displayed' do
@@ -118,6 +123,12 @@ RSpec.describe 'Work item detail', :js, feature_category: :team_planning do
       wait_for_all_requests
 
       expect(page).to have_content(note.note)
+    end
+
+    it 'change type action is not displayed' do
+      click_button _('More actions'), match: :first
+
+      expect(find_by_testid('work-item-actions-dropdown')).to have_button(s_('WorkItem|Change type'))
     end
   end
 end

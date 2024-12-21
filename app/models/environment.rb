@@ -201,6 +201,11 @@ class Environment < ApplicationRecord
     other: 4
   }
 
+  enum auto_stop_setting: {
+    always: 0,
+    with_action: 1
+  }, _prefix: true
+
   state_machine :state, initial: :available do
     event :start do
       transition stopped: :available
@@ -369,26 +374,23 @@ class Environment < ApplicationRecord
     stop_actions.present?
   end
 
+  # TODO: move this method and dependencies into Environments::StopService
   def stop_with_actions!
     return unless available?
 
-    stop!
-
-    actions = []
-
-    stop_actions.each do |stop_action|
-      play_job = ->(job) do
-        actions << job.play(job.user)
-      rescue StateMachines::InvalidTransition
-        # Ci::PlayBuildService rescues an error of StateMachines::InvalidTransition and fall back to retry.
-        # However, Ci::PlayBridgeService doesn't rescue it, so we're ignoring the error if it's not playable.
-        # We should fix this inconsistency in https://gitlab.com/gitlab-org/gitlab/-/issues/420855.
-      end
-
-      play_job.call(stop_action)
+    if stop_actions.any? || auto_stop_setting_always?
+      stop!
     end
 
-    actions
+    # The current_user stopping the environment may not be the same actor that we use
+    # to run the stop action jobs. We need to ensure that if any of the actors require
+    # composite identity we link it before hand.
+    # This design assumes that all `stop_actions` have the same user.
+    link_identity = ::Gitlab::Auth::Identity.currently_linked.blank?
+
+    stop_actions.filter_map do |stop_action|
+      run_stop_action!(stop_action, link_identity: link_identity)
+    end
   end
 
   def stop_actions
@@ -570,6 +572,16 @@ class Environment < ApplicationRecord
   end
 
   private
+
+  def run_stop_action!(job, link_identity:)
+    ::Gitlab::Auth::Identity.link_from_job(job) if link_identity
+
+    job.play(job.user)
+  rescue StateMachines::InvalidTransition
+    # Ci::PlayBuildService rescues an error of StateMachines::InvalidTransition and fall back to retry.
+    # However, Ci::PlayBridgeService doesn't rescue it, so we're ignoring the error if it's not playable.
+    # We should fix this inconsistency in https://gitlab.com/gitlab-org/gitlab/-/issues/420855.
+  end
 
   # We deliberately avoid using AddressableUrlValidator to allow users to update their environments even if they have
   # misconfigured `environment:url` keyword. The external URL is presented as a clickable link on UI and not consumed

@@ -62,9 +62,7 @@ export default {
       skip() {
         return !this.isDropdownOpen;
       },
-      pollInterval() {
-        return this.pollInterval;
-      },
+      pollInterval: PIPELINE_POLL_INTERVAL_DEFAULT,
       update(data) {
         return data?.ciPipelineStage?.jobs?.nodes || [];
       },
@@ -87,9 +85,6 @@ export default {
     isLoading() {
       return this.$apollo.queries.stageJobs.loading;
     },
-    pollInterval() {
-      return this.isDropdownOpen ? PIPELINE_POLL_INTERVAL_DEFAULT : 0;
-    },
   },
   mounted() {
     toggleQueryPollingByVisibility(this.$apollo.queries.stageJobs);
@@ -97,9 +92,11 @@ export default {
   methods: {
     onHideDropdown() {
       this.isDropdownOpen = false;
+      this.$apollo.queries.stageJobs.stopPolling();
     },
     onShowDropdown() {
       this.isDropdownOpen = true;
+      this.$apollo.queries.stageJobs.startPolling(PIPELINE_POLL_INTERVAL_DEFAULT);
 
       // used for tracking in the pipeline table
       this.$emit('miniGraphStageClick');
@@ -115,6 +112,7 @@ export default {
   <gl-disclosure-dropdown
     data-testid="pipeline-mini-graph-dropdown"
     :aria-label="stageAriaLabel(stage.name)"
+    fluid-width
     @hidden="onHideDropdown"
     @shown="onShowDropdown"
   >
@@ -145,7 +143,7 @@ export default {
     </div>
     <ul
       v-else
-      class="gl-m-0 gl-overflow-y-auto gl-p-0"
+      class="gl-m-0 gl-w-34 gl-overflow-y-auto gl-p-0"
       data-testid="pipeline-mini-graph-dropdown-menu-list"
       @click.stop
     >
